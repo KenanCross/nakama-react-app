@@ -1,26 +1,41 @@
 import React from "react";
-import  AnimeData  from "../models/anime";
+import AnimeData from "../models/anime";
 
-const AnimeDetails: React.FC<AnimeData> = ({title, title_japanese, images, episodes, type, source, synopsis, background, rank, rating, season }) => {
-    const imageURL:string = images["webp"].image_url
-    return (
-			<>
-				<div className='animeDetails'>
-					<div className='titleContainer'>
-						<img src={imageURL} />
-						<div className='animeMeta'>
-							<h1>{title}</h1>
-							<h3>{title_japanese}</h3>
-							<div className='subMeta'></div>
+const AnimeDetails: React.FC<AnimeData> = ({
+	title,
+	title_english,
+	title_japanese,
+	images,
+	episodes,
+	type,
+	source,
+	synopsis,
+	background,
+	rank,
+	rating,
+	season,
+}) => {
+	return (
+		<>
+			<div className='animeDetails'>
+				<div className='titleContainer'>
+					<img src={images["webp"].large_image_url} />
+					<div className='animeMeta'>
+						<h1>{title_english}</h1>
+						<h3>
+							JPN: {title_japanese} | {title}
+						</h3>
+						<div className='subMeta'>
+							<div>{rank}</div><div></div>
 						</div>
-                    </div>
-                    <div>
-                    <p>{synopsis}</p>
-                    </div>
+					</div>
 				</div>
-			</>
-		);
-
-}
+				<div>
+					<p>{synopsis}</p>
+				</div>
+			</div>
+		</>
+	);
+};
 
 export default AnimeDetails;

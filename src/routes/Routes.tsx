@@ -1,16 +1,17 @@
 import React from "react";
-import { Route, Routes } from "react-router-dom";
-import Home from '../pages/home'
-import Anime from '../pages/anime'
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Home from "../pages/home";
+import Anime from "../pages/anime";
 
 const Router: React.FC = () => {
+	return (
+		<BrowserRouter>
+			<Routes>
+				<Route path='/' element={<Home />} />
+				<Route path='/anime/:id' element={<Anime />} />
+			</Routes>
+		</BrowserRouter>
+	);
+};
 
-    return (
-        <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/anime/:id" element={<Anime />} />
-        </Routes>
-    )
-}
-
-export default Router
+export default Router;

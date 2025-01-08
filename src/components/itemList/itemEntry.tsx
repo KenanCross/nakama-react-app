@@ -6,8 +6,8 @@ const ItemEntry: FC<AnimeData> = ({mal_id,
 	title,images}) => {
 	return (
 		<div className='itemContainer'>
-			<Link to={`/anime:${mal_id}`}>
-				<img src={images["webp"].small_image_url} title={title} />
+			<Link to={`/anime/${mal_id}`}>
+				<img src={images["webp"].image_url} title={title} />
 				<div className='itemTitle'>{title}</div>
 			</Link>
 		</div>
