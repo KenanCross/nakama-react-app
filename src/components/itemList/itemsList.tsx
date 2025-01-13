@@ -1,22 +1,19 @@
 import React from "react";
-import AnimeData from "../../models/anime";
+import {AnimeDataArray} from "../../models/anime";
 import ItemEntry from "./itemEntry";
-
-export interface AnimeDataArray {
-    data: AnimeData[];
-}
 
 const itemsList: React.FC<AnimeDataArray> = ({data}) => {
     return (
-			<div className='itemList'>
-            {
-                
+			<div className='flex flex-col justify-evenly gap-1 md:flex-row flex-wrap'>
+				{
 					//.entries(animeList).map();
 					data.map((data) => (
-						<ItemEntry key={data.mal_id}
-                            mal_id={data.mal_id}
-                            title={data.title_english}
-                            images={data.images}/>
+						<ItemEntry
+							key={data.mal_id}
+							mal_id={data.mal_id}
+							title={data.title_english}
+							images={data.images}
+						/>
 					))
 				}
 			</div>

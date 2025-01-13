@@ -1,91 +1,96 @@
 export default interface AnimeData {
 	mal_id: number;
-	title: string;
-	title_english: string;
-	title_japanese: string;
+	title?: string;
+	title_english?: string;
+	title_japanese?: string;
 	images: {
 		jpg: {
-			image_url: string;
-			small_image_url: string;
-			large_image_url: string;
+			image_url?: string;
+			small_image_url?: string;
+			large_image_url?: string;
 		};
 		webp: {
-			image_url: string;
-			small_image_url: string;
-			large_image_url: string;
+			image_url?: string;
+			small_image_url?: string;
+			large_image_url?: string;
 		};
 	};
-	trailer: {
-		youtube_id: string;
-		url: string;
-		embed_url: string;
-		images: {
-			image_url: string;
-			small_image_url: string;
-			medium_image_url: string;
-			large_image_url: string;
-			maximum_image_url: string;
+	trailer?: {
+		youtube_id?: string;
+		url?: string;
+		embed_url?: string;
+		images?: {
+			image_url?: string;
+			small_image_url?: string;
+			medium_image_url?: string;
+			large_image_url?: string;
+			maximum_image_url?: string;
 		};
 	};
-	episodes: number;
-	type: string;
-	source: string;
-	synopsis: string;
-	background: string;
-	rating: number; //get the mean from MAL query
-	rank: number;
-	season: string;
-	year: number;
-	airing: boolean;
-	broadcast: {
-		day: string;
-		time: string;
-		timezone: string;
-		string: string;
+	episodes?: number;
+	type?: string;
+	source?: string;
+	synopsis?: string;
+	background?: string;
+	rating?: number; //get the mean from MAL query
+	rank?: number;
+	season?: string;
+	year?: number;
+	airing?: boolean;
+	broadcast?: {
+		day?: string;
+		time?: string;
+		timezone?: string;
+		string?: string;
 	};
-	approved: boolean;
-	status: string;
-	producers: [
+	approved?: boolean;
+	status?: string;
+	producers?: [
 		{
-			mal_id: number;
-			type: string;
-			name: string;
-			url: string;
+			mal_id?: number;
+			type?: string;
+			name?: string;
+			url?: string;
 		}
 	];
-	licensors: [
+	licensors?: [
 		{
-			mal_id: number;
-			type: string;
-			name: string;
-			url: string;
+			mal_id?: number;
+			type?: string;
+			name?: string;
+			url?: string;
 		}
 	];
-	studios: [
+	studios?: [
 		{
-			mal_id: number;
-			type: string;
-			name: string;
-			url: string;
+			mal_id?: number;
+			type?: string;
+			name?: string;
+			url?: string;
 		}
 	];
-	genres: [
+	genres?: [
 		{
-			mal_id: number;
-			type: string;
-			name: string;
-			url: string;
+			mal_id?: number;
+			type?: string;
+			name?: string;
+			url?: string;
 		}
 	];
-	explicit_genres: [];
-	themes: [
+	explicit_genres?: [];
+	themes?: [
 		{
-			mal_id: number;
-			type: string;
-			name: string;
-			url: string;
+			mal_id?: number;
+			type?: string;
+			name?: string;
+			url?: string;
 		}
 	];
+}
+
+export interface AnimeDataArray {
+    data: AnimeData[];
+    filter: string;
 }
 
 /*
