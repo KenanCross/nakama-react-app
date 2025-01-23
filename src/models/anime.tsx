@@ -90,7 +90,6 @@ export default interface AnimeData {
 
 export interface AnimeDataArray {
     data: AnimeData[];
-    filter: string;
 }
 
 /*

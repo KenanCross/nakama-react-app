@@ -2,18 +2,8 @@ import { FC, useEffect, useState } from "react";
 import { AnimeDataArray } from "../../models/anime";
 import ItemEntry from "../itemList/itemEntry";
 
-const itemFilter: FC<AnimeDataArray> = ({}) => {
-	const [data, setData] = useState<AnimeDataArray | null>(null);
-	useEffect(() => {
-		const fetchAnimeData = async () => {
-			await fetch(`https://api.jikan.moe/v4/seasons/now`)
-				.then((response) => response.json())
-				.then((data) => setData(data))
-				.catch((error) => console.error("Error fetching anime details", error));
-		};
-		fetchAnimeData();
-	}, []);
-
+const itemFilter: FC<AnimeDataArray> = ({data}) => {
+	
 	const today = new Date();
 	const dayIndex = today.getDay(); // Returns a number 0-6 representing Sunday-Saturday
 
@@ -27,7 +17,7 @@ const itemFilter: FC<AnimeDataArray> = ({}) => {
 		"Saturdays",
 	];
 	const dayName = daysOfWeek[dayIndex];
-	// handleFilter(dayName);
+	
 	const filteredShows = data.filter(
 		(shows) => shows!.broadcast!.day! === dayName
 	);
