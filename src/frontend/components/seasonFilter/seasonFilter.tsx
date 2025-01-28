@@ -1,54 +1,40 @@
-import { FC, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import itemsList from "../itemList/itemsList";
-import { getFilteredData } from "../../functions/fetchAnime";
+import { useFilteredData } from "../../functions/fetchAnime";
+import { AnimeDataArray } from "../../models/anime";
 
 const seasonFilter = () => {
 	const [seasonFilter, setSeasonFilter] = useState(0); //Add Filtering Functionality to itemList/itemFilter component.
 	const [continueFlag, setContinueFlag] = useState(false);
-	const [seasonData, setSeasonData] = useState(null);
-	const [loading, setLoading] = useState(true);
+	const [seasonData, setSeasonData] = useState<AnimeDataArray | null>(null);
 
-	enum filter {
-		tv,
-		movie,
-		ona,
-		ova,
-		special,
+	const updateData = () => {
+		useFilteredData(setSeasonData, seasonFilter, continueFlag);
 	}
-
-	useEffect(() => {
-		async function fetchData() {
-			setLoading(true);
-			await fetch(
-				`https://api.jikan.moe/v4/seasons/now?filter=${Object.values(filter)[seasonFilter]}&continuing`
-			)
-				.then((response) => response.json())
-				.then((data) => setSeasonData(data))
-				.then(() => setLoading(false))
-				.catch((error) => console.error("Error fetching anime details", error));
-		}
-		fetchData();
-	}, [seasonFilter]);
-
+	
 	const handleSeasonClick = (filter: number) => {
 		setSeasonFilter(filter);
+		console.log(filter)
+		updateData
 	};
+
+	useFilteredData(setSeasonData, seasonFilter, continueFlag);
 
 	return (
 		<div className='mb-6'>
 			<h4 className='mb-3'>Anime Airing This Season</h4>
 			<div>
-				<button className='btn btn-ghost' onClick={() => handleSeasonClick(1)}>
+				<button className='btn btn-ghost' onClick={() => handleSeasonClick(0)}>
 					TV
 				</button>
-				<button className='btn btn-ghost' onClick={() => handleSeasonClick(3)}>
+				<button className='btn btn-ghost' onClick={() => handleSeasonClick(2)}>
 					ONA
 				</button>
-				<button className='btn btn-ghost' onClick={() => handleSeasonClick(2)}>
+				<button className='btn btn-ghost' onClick={() => handleSeasonClick(1)}>
 					MOVIE
 				</button>
 			</div>
-			{loading ? <p>Loading Data...</p> : itemsList(seasonData!)}
+			{seasonData ? itemsList(seasonData!) : <p>Loading Data...</p>}
 		</div>
 	);
 };

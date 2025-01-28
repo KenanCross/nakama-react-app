@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { AnimeDataArray } from "../models/anime";
 
 const RATE_LIMIT = {
@@ -19,11 +19,13 @@ setInterval(() => {
 	requestCount.minute = 0;
 }, 60000);
 
-export const getFilteredData = (type: number, continueFlag: boolean) => {
-    const [data, setData] = useState<AnimeDataArray | null>(null);
-    let ongoing = '';
-	continueFlag ? ongoing = '&continuing' : ''
+const delay = 1000;
 
+export const useFilteredData = (setData:  (data: AnimeDataArray | null) => void, type: number, continueFlag?: boolean) => {
+    const lastExecuted = useRef(Date.now());
+	let ongoing = continueFlag ? '&continuing' : ''
+	
+	
 	enum filter {
 		tv,
 		movie,
@@ -33,55 +35,39 @@ export const getFilteredData = (type: number, continueFlag: boolean) => {
 	}
 
 	useEffect(() => {
+		
 		const fetchAnimeData = async () => {
-			if (requestCount.second >= RATE_LIMIT.perSecond) {
-				return console.log("Rate limit exceeded (3 requests per second).");
+			if (Date.now() - lastExecuted.current >= delay) {
+				lastExecuted.current = Date.now();
+				await fetch(
+					`https://api.jikan.moe/v4/seasons/now?filter=${Object.values(filter)[type]}&${ongoing}`
+				)
+					.then((response) => response.json())
+					.then((data) => setData(data))
+					.catch((error) =>
+						console.error("Error fetching anime details", error)
+					);
+			} else {
+				setTimeout(async() => {
+					lastExecuted.current = Date.now();
+					await fetch(
+						`https://api.jikan.moe/v4/seasons/now?filter=${Object.values(filter)[type]}&${ongoing}`
+					)
+						.then((response) => response.json())
+						.then((data) => setData(data))
+						.catch((error) =>
+							console.error("Error fetching anime details", error)
+						);
+
+				}, delay)
 			}
-
-			if (requestCount.minute >= RATE_LIMIT.perMinute) {
-				return console.log("Rate limit exceeded (60 requests per minute).");
-			}
-
-			requestCount.second++;
-			requestCount.minute++;
-
-			await fetch(`https://api.jikan.moe/v4/seasons/now?filter=${Object.values(filter)[type]}&continuing`)
-				.then((response) => response.json())
-				.then((data) => setData(data))
-				.catch((error) => console.error("Error fetching anime details", error));
 		};
 		fetchAnimeData();
-	}, [data]);
-	return data;
+	}, []);
 };
 
-export const getCurrentSeason = () => {
-    const [data, setData] = useState<AnimeDataArray | null>(null);
-    useEffect(() => {
-		const fetchAnimeData = async () => {
-				if (requestCount.second >= RATE_LIMIT.perSecond) {
-					return console.log("Rate limit exceeded (3 requests per second).");
-				}
-
-				if (requestCount.minute >= RATE_LIMIT.perMinute) {
-					return console.log("Rate limit exceeded (60 requests per minute).");
-				}
-
-				requestCount.second++;
-				requestCount.minute++;
-
-                await fetch(`https://api.jikan.moe/v4/seasons/now`)
-                    .then((response) => response.json())
-                    .then((data) => setData(data))
-                    .catch((error) => console.error("Error fetching anime details", error));
-            };
-            fetchAnimeData();
-    }, []);
-    return data;
-}
-export const getTodaysShows = () => {
-	const [data, setData] = useState<AnimeDataArray | null>(null);
-	const [loading, setLoading] = useState(true);
+export const useTodaysShows = (setData: (data: AnimeDataArray | null) => void) => {
+	
 	enum Days {
 		Sunday,
 		Monday,
@@ -91,9 +77,9 @@ export const getTodaysShows = () => {
 		Friday,
 		Saturday,
 	}
-    const today = new Date();
-    const dayIndex = today.getDay(); // Returns a number 0-6 representing Sunday-Saturday
-    
+	const today = new Date();
+	const dayIndex = today.getDay(); // Returns a number 0-6 representing Sunday-Saturday
+
 	useEffect(() => {
 		const fetchAnimeData = async () => {
 			if (requestCount.second >= RATE_LIMIT.perSecond) {
@@ -114,6 +100,5 @@ export const getTodaysShows = () => {
 				.catch((error) => console.error("Error fetching anime details", error));
 		};
 		fetchAnimeData();
-	}, [loading]);
-	return data;
-}
+	}, []);
+};
