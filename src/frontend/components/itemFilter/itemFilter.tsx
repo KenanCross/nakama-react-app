@@ -26,7 +26,7 @@ const itemFilter: FC<AnimeDataArray> = ({data}) => {
 		<div className='flex flex-col justify-evenly gap-1 md:flex-row'>
 			{
 				//.entries(animeList).map();
-				filteredShows.map((data) => (
+				data.map((data) => (
 					<ItemEntry
 						key={data.mal_id}
 						mal_id={data.mal_id}
