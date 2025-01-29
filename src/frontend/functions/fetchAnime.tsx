@@ -1,30 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { AnimeDataArray } from "../models/anime";
 
-const RATE_LIMIT = {
-	perSecond: 3,
-	perMinute: 60,
-};
-
-let requestCount = {
-	second: 0,
-	minute: 0,
-};
-
-setInterval(() => {
-	requestCount.second = 0;
-}, 1000);
-
-setInterval(() => {
-	requestCount.minute = 0;
-}, 60000);
-
-const delay = 1000;
-
-export const useFilteredData = (setData:  (data: AnimeDataArray | null) => void, type: number, continueFlag?: boolean) => {
-    const lastExecuted = useRef(Date.now());
-	let ongoing = continueFlag ? '&continuing' : ''
-	
+export const useFilteredData = (type: number, continueFlag?: boolean, page?: number) => {
+	const [data, setData] = useState(null);
+	const [loading, setLoading] = useState(true);
+	let ongoing = continueFlag ? '&continuing' : '';
+	let pageRef = page ? `&page=${page}` : ''
 	
 	enum filter {
 		tv,
@@ -34,36 +15,20 @@ export const useFilteredData = (setData:  (data: AnimeDataArray | null) => void,
 		special
 	}
 
-	useEffect(() => {
-		
+	useEffect(() => {		
 		const fetchAnimeData = async () => {
-			if (Date.now() - lastExecuted.current >= delay) {
-				lastExecuted.current = Date.now();
-				await fetch(
-					`https://api.jikan.moe/v4/seasons/now?filter=${Object.values(filter)[type]}&${ongoing}`
-				)
-					.then((response) => response.json())
-					.then((data) => setData(data))
-					.catch((error) =>
-						console.error("Error fetching anime details", error)
-					);
-			} else {
-				setTimeout(async() => {
-					lastExecuted.current = Date.now();
-					await fetch(
-						`https://api.jikan.moe/v4/seasons/now?filter=${Object.values(filter)[type]}&${ongoing}`
-					)
-						.then((response) => response.json())
-						.then((data) => setData(data))
-						.catch((error) =>
-							console.error("Error fetching anime details", error)
-						);
-
-				}, delay)
-			}
+			console.log("request Season shows");
+			await fetch(
+				`https://api.jikan.moe/v4/seasons/now?filter=${Object.values(filter)[type]}${ongoing}${pageRef}&sfw`
+			)
+				.then((response) => response.json())
+				.then((data) => setData(data))
+				.catch((error) => console.error("Error fetching anime details", error))
+				.finally(() => setLoading(false));
 		};
 		fetchAnimeData();
-	}, []);
+	}, [type]);
+	return {data, loading}
 };
 
 export const useTodaysShows = (setData: (data: AnimeDataArray | null) => void) => {
@@ -81,17 +46,8 @@ export const useTodaysShows = (setData: (data: AnimeDataArray | null) => void) =
 	const dayIndex = today.getDay(); // Returns a number 0-6 representing Sunday-Saturday
 
 	useEffect(() => {
+		console.log('request Today shows')
 		const fetchAnimeData = async () => {
-			if (requestCount.second >= RATE_LIMIT.perSecond) {
-				return console.log("Rate limit exceeded (3 requests per second).");
-			}
-
-			if (requestCount.minute >= RATE_LIMIT.perMinute) {
-				return console.log("Rate limit exceeded (60 requests per minute).");
-			}
-
-			requestCount.second++;
-			requestCount.minute++;
 			await fetch(
 				`https://api.jikan.moe/v4/schedules?sfw=true&kids=false&page=1&filter=${Object.values(Days)[dayIndex]}`
 			)

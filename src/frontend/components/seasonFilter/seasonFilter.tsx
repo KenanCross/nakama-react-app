@@ -1,24 +1,17 @@
 import { useState, useEffect } from "react";
 import itemsList from "../itemList/itemsList";
 import { useFilteredData } from "../../functions/fetchAnime";
-import { AnimeDataArray } from "../../models/anime";
 
 const seasonFilter = () => {
 	const [seasonFilter, setSeasonFilter] = useState(0); //Add Filtering Functionality to itemList/itemFilter component.
 	const [continueFlag, setContinueFlag] = useState(false);
-	const [seasonData, setSeasonData] = useState<AnimeDataArray | null>(null);
+	const { data, loading } = useFilteredData(seasonFilter, continueFlag);
 
-	const updateData = () => {
-		useFilteredData(setSeasonData, seasonFilter, continueFlag);
-	}
-	
+
 	const handleSeasonClick = (filter: number) => {
 		setSeasonFilter(filter);
-		console.log(filter)
-		updateData
 	};
 
-	useFilteredData(setSeasonData, seasonFilter, continueFlag);
 
 	return (
 		<div className='mb-6'>
@@ -34,7 +27,7 @@ const seasonFilter = () => {
 					MOVIE
 				</button>
 			</div>
-			{seasonData ? itemsList(seasonData!) : <p>Loading Data...</p>}
+			{loading ? <p>Loading Data...</p> : itemsList(data!)}
 		</div>
 	);
 };
