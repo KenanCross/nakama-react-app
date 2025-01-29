@@ -1,5 +1,5 @@
 import React from "react"
-import Router from "./frontend/routes/Routes"
+import Router from "./routes/Routes"
 import './App.css'
 
 

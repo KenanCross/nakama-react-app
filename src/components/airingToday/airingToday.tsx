@@ -1,4 +1,4 @@
-import { FC, useState } from "react"
+import { useState } from "react"
 import { useTodaysShows } from "../../functions/fetchAnime"
 import itemFilter from "../itemFilter/itemFilter"
 import { AnimeDataArray } from "../../models/anime"

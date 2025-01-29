@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState} from "react";
 import itemsList from "../itemList/itemsList";
 import { useFilteredData } from "../../functions/fetchAnime";
 

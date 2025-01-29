@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import seasonFilter from "../components/seasonFilter/seasonFilter";
 import airingToday from "../components/airingToday/airingToday";
 
