@@ -3,11 +3,11 @@ import Anime from "./anime";
 import Review from "./review";
 
 interface User {
-	_id?: ObjectId | String;
+	userId?: ObjectId | String;
 	userName: string;
 	password: string;
-	favorites: Anime[];
-	reviews: Review[];
+	favorites: Anime["mal_id"][];
+	reviews: Review["reviewId"][];
 }
 
 export default User;

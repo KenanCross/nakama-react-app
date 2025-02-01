@@ -1,12 +1,15 @@
 import { ObjectId } from "mongodb";
 import User from "./user";
 import Anime from "./anime";
-interface Review {
-	_id?: ObjectId | String;
-	userId: User["_id"];
+
+export default interface Review {
+	reviewId?: ObjectId | String;
+	// foreign key:
+	userId: User["userId"];
+	reviewTitle: string;
 	type: "movie" | "tv" | "ona";
-	data: string;
-	review: string;
+	date: string;
+	reviewText: string;
 	score: number;
 	entry: {
 		id: Anime["mal_id"];
@@ -14,5 +17,3 @@ interface Review {
 		imageUrl: Anime["imageURL"];
 	};
 }
-
-export default Review
