@@ -86,11 +86,13 @@ export default interface AnimeData {
 			name?: string;
 			url?: string;
 		}
-	];
+    ];
+    index?: number
 }
 
 export interface AnimeDataArray {
     data: AnimeData[];
+    index: number
 }
 
 /*
