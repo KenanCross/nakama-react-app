@@ -32,6 +32,8 @@ const itemFilter: FC<AnimeDataArray> = ({data}) => {
 						mal_id={data.mal_id}
 						title={data.title_english}
 						images={data.images}
+						rating={data.rating}
+						score={data.score}
 					/>
 				))
 			}
