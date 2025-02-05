@@ -1,8 +1,20 @@
 import { useState, useEffect } from "react";
 import { AnimeDataArray } from "../models/anime";
 
+export function getUniqueObjects(array: [], property:string) {
+	const seenValues = new Set();
+	return array.filter((obj) => {
+		const value = obj[property];
+		if (seenValues.has(value)) {
+			return false;
+		}
+		seenValues.add(value);
+		return true;
+	});
+}
+
 export const useFilteredData = (type: number, continueFlag?: boolean, page?: number) => {
-	const [data, setData] = useState(null);
+	const [data, setData] = useState<AnimeDataArray | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [lastPage, setLastPage] = useState(null);
 	let ongoing = continueFlag ? '&continuing' : '';
@@ -24,7 +36,8 @@ export const useFilteredData = (type: number, continueFlag?: boolean, page?: num
 				`https://api.jikan.moe/v4/seasons/now?filter=${Object.values(filter)[type]}${ongoing}${pageRef}&sfw`
 			)
 				.then((response) => response.json())
-				.then((data) => { setData(data);  setLastPage(data.pagination.has_next_page)})
+				.then((data) => {
+					data.data = getUniqueObjects(data.data, "mal_id"); setData(data);  setLastPage(data.pagination.has_next_page)})
 				.catch((error) => console.error("Error fetching anime details", error))
 				.finally(() => setLoading(false));
 		};
@@ -48,15 +61,53 @@ export const useTodaysShows = (setData: (data: AnimeDataArray | null) => void) =
 	const dayIndex = today.getDay(); // Returns a number 0-6 representing Sunday-Saturday
 
 	useEffect(() => {
-		console.log('request Today shows')
 		const fetchAnimeData = async () => {
 			await fetch(
 				`https://api.jikan.moe/v4/schedules?sfw=true&kids=false&page=1&filter=${Object.values(Days)[dayIndex]}`
 			)
 				.then((response) => response.json())
-				.then((data) => setData(data))
+				.then((data) => {
+					data.data = getUniqueObjects(data.data, "mal_id"); setData(data)})
 				.catch((error) => console.error("Error fetching anime details", error));
 		};
 		fetchAnimeData();
 	}, []);
 };
+
+export const useTopTen = (type: number, filter: number) => {
+	const [data, setData] = useState(null);
+	const [loading, setLoading] = useState(true);
+	enum medium {
+		tv,
+		movie,
+		ona,
+		ova,
+		special,
+	}
+
+	enum period {
+		airing,
+		upcoming,
+		bypopularity,
+		favorite
+	}
+
+	useEffect(() => {
+		const fetchAnimeData = async () => {
+			setLoading(true);
+			await fetch(
+				`https://api.jikan.moe/v4/top/anime?limit=15&type=${Object.values(medium)[type]}&filter=${Object.values(period)[filter]}&sfw`
+			)
+				.then((response) => response.json())
+				.then((data) => {
+					data.data = getUniqueObjects(data.data, "mal_id");
+					setData(data);
+				})
+				.catch((error) => console.error("Error fetching anime details", error))
+				.finally(() => setLoading(false));
+		};
+		fetchAnimeData();
+	}, []);
+
+	return {data, loading};
+}

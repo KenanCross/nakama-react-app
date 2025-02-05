@@ -85,11 +85,22 @@ export default interface AnimeData {
 			name?: string;
 			url?: string;
 		}
-	];
+    ];
+    index?: number
 }
+
+export interface Anime {
+	mal_id: number;
+	title: string;
+	imageURL: string;
+	score: number;
+	type: string;
+}
+
 
 export interface AnimeDataArray {
     data: AnimeData[];
+    index: number
 }
 
 /*
