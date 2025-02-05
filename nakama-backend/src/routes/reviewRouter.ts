@@ -10,6 +10,7 @@ const errorHandler = (error: any, res: any) => {
     res.json({ message: `ERROR: ${error}`});
 };
 
+
 reviewRouter.get('/reviews/allReviews', async (req: any, res: any) => {
     try {
         await client.connect();
@@ -25,6 +26,8 @@ reviewRouter.get('/reviews/allReviews', async (req: any, res: any) => {
         await client.close();
     }
 });
+
+// Get search by query:
 
 reviewRouter.post('/reviews/post', async (req: any, res: any) => {
     try {
@@ -43,5 +46,9 @@ reviewRouter.post('/reviews/post', async (req: any, res: any) => {
         await client.close();
     }
 });
+
+// Put:
+
+// Delete:
 
 export default reviewRouter;

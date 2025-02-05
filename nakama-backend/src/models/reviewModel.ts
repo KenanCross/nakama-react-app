@@ -1,9 +1,9 @@
 import { ObjectId } from "mongodb";
 
 export default interface Review {
-    //          
-    _id?: ObjectId | string;
-    //  // localField 
+    // foreign Field
+    reviewId?: ObjectId | string;
+    // unique idetifier: localField
     userId: ObjectId | string;
     reviewBody: string;
 };

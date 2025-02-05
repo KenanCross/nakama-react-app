@@ -11,6 +11,43 @@ const errorHandler = (error: any, res: any) => {
     res.json({ message: `ERROR: ${error}`});
 };
 
+
+//get all Users:
+userRouter.get('/users/allUsers', async (req: any, res: any) => {
+    try {
+        await client.connect();
+        const usersCollection = client.db().collection<User>('users');
+
+        const result = await usersCollection.find({}).toArray();
+
+        res.json(result).status(200);
+        
+       } catch(error) {
+           errorHandler(error, res);
+       } finally {
+           await client.close();
+       }
+});
+
+// Search by query:
+userRouter.get('/users/search', async (req: any, res: any) => {
+    try {
+        await client.connect();
+        const usersCollection = client.db().collection<User>('users');
+
+        const query: any = {};
+
+        const result = await usersCollection.find( query ).toArray();
+
+        res.json(result).status(200);
+        
+       } catch(error) {
+           errorHandler(error, res);
+       } finally {
+           await client.close();
+       }
+});
+
 // joining...
 userRouter.get('/users/searchReviewsByUser', async (req: any, res: any) => {
     try {
@@ -18,15 +55,13 @@ userRouter.get('/users/searchReviewsByUser', async (req: any, res: any) => {
         const usersCollection = client.db().collection<User>('users');
         const reviewsCollection = client.db().collection<Review>('reviews');
 
-        // Aggregation Pipeline:
-        
         const result = await reviewsCollection.aggregate([
             {
-               $lookup: {
-                        from: "users",          // The primary collection we are pulling from
-                        localField: "userId",   // The field in Reviews (foreign collection) that stores the reference
-                        foreignField: "_id",    // The field in Users (primary collection) that we are matching
-                        as: "user_info"         // The name of the new field that will store the matched User data
+                $lookup: {
+                    from: "users",
+                    localField: "userId",
+                    foreignField: "_id",
+                    as: "user_info"
                 }
             }
         ]).toArray();
