@@ -1,21 +1,15 @@
-import React, { FC } from "react";
-import { AnimeRecommendationComparison, AnimeRecommendationProps } from "../../models/anime";
+import React, { FC, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { RecommendationEntry} from "../../models/anime";
 
-const Recommendation: FC<AnimeRecommendationComparison> = ( data ) => {
-	console.log(data)
+const Recommendation: FC<RecommendationEntry[]> = (data, loading) => {
+	
 	return (
-		<div className='flex flex-col'>
-			<div className='flex flex-row'>
-				<div>
-					<img src='' />
-				</div>
-				<div></div>
-				<div>
-					<img src='' />
-				</div>
-			</div>
-			<div></div>
-		</div>
-	);
+		data.map((entry, i) => {
+		let orderClass = i > 0 ? "order-last" : "order-first";
+		<div className={orderClass}>
+			<img src={entry.images["webp"].image_url} />
+		</div>;
+	});)
 };
 export default Recommendation

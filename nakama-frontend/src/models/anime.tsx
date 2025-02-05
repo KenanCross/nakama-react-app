@@ -105,7 +105,7 @@ export interface AnimeRecommendationComparison {
 	};
 }
 
-interface RecommendationEntry {
+export interface RecommendationEntry {
     mal_id: number;
     url: string;
     images: {
