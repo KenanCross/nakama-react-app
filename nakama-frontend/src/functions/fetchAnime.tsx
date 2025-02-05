@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
-import { AnimeDataArray } from "../models/anime";
+import { useParams } from "react-router-dom";
+import { AnimeDataArray, AnimeRecommendationComparison } from "../models/anime";
 
-export function getUniqueObjects(array: [], property:string) {
+
+export function getUniqueObjects(array: [], property: string) {
 	const seenValues = new Set();
 	return array.filter((obj) => {
 		const value = obj[property];
@@ -13,41 +15,49 @@ export function getUniqueObjects(array: [], property:string) {
 	});
 }
 
-export const useFilteredData = (type: number, continueFlag?: boolean, page?: number) => {
+export const useFilteredData = (
+	type: number,
+	continueFlag?: boolean,
+	page?: number
+) => {
 	const [data, setData] = useState<AnimeDataArray | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [lastPage, setLastPage] = useState(null);
-	let ongoing = continueFlag ? '&continuing' : '';
-	let pageRef = page ? `&page=${page}` : ''
-	
+	let ongoing = continueFlag ? "&continuing" : "";
+	let pageRef = page ? `&page=${page}` : "";
+
 	enum filter {
 		tv,
 		movie,
 		ona,
 		ova,
-		special
+		special,
 	}
 
-	useEffect(() => {		
+	useEffect(() => {
 		const fetchAnimeData = async () => {
 			console.log("request Season shows");
-			setLoading(true)
+			setLoading(true);
 			await fetch(
 				`https://api.jikan.moe/v4/seasons/now?filter=${Object.values(filter)[type]}${ongoing}${pageRef}&sfw`
 			)
 				.then((response) => response.json())
 				.then((data) => {
-					data.data = getUniqueObjects(data.data, "mal_id"); setData(data);  setLastPage(data.pagination.has_next_page)})
+					data.data = getUniqueObjects(data.data, "mal_id");
+					setData(data);
+					setLastPage(data.pagination.has_next_page);
+				})
 				.catch((error) => console.error("Error fetching anime details", error))
 				.finally(() => setLoading(false));
 		};
 		fetchAnimeData();
 	}, [type, page, continueFlag]);
-	return {data, lastPage, loading}
+	return { data, lastPage, loading };
 };
 
-export const useTodaysShows = (setData: (data: AnimeDataArray | null) => void) => {
-	
+export const useTodaysShows = (
+	setData: (data: AnimeDataArray | null) => void
+) => {
 	enum Days {
 		Sunday,
 		Monday,
@@ -67,7 +77,9 @@ export const useTodaysShows = (setData: (data: AnimeDataArray | null) => void) =
 			)
 				.then((response) => response.json())
 				.then((data) => {
-					data.data = getUniqueObjects(data.data, "mal_id"); setData(data)})
+					data.data = getUniqueObjects(data.data, "mal_id");
+					setData(data);
+				})
 				.catch((error) => console.error("Error fetching anime details", error));
 		};
 		fetchAnimeData();
@@ -89,7 +101,7 @@ export const useTopTen = (type: number, filter: number) => {
 		airing,
 		upcoming,
 		bypopularity,
-		favorite
+		favorite,
 	}
 
 	useEffect(() => {
@@ -109,5 +121,29 @@ export const useTopTen = (type: number, filter: number) => {
 		fetchAnimeData();
 	}, []);
 
+	return { data, loading };
+};
+
+export const useGetRecommendations = () => {
+	const { id } = useParams<{ id: string }>();
+	const [data, setData] = useState<AnimeRecommendationComparison | null>(null);	
+	const [loading, setLoading] = useState(true);
+	let fetchUrl = id 
+		? `https://api.jikan.moe/v4/anime/${id}/recommendations/`
+		: `https://api.jikan.moe/v4/recommendations/anime`;
+
+	useEffect(() => {
+		const fetchAnimeData = async () => {
+			setLoading(true);
+			await fetch(fetchUrl)
+				.then((response) => response.json())
+				.then((data) => {
+					setData(data.data);
+				})
+				.catch((error) => console.error("Error fetching anime details", error))
+				.finally(() => setLoading(false));
+		};
+		fetchAnimeData();
+	}, []);
 	return {data, loading};
-}
+};

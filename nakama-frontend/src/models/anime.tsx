@@ -94,6 +94,38 @@ export interface AnimeDataArray {
     index: number
 }
 
+export interface AnimeRecommendationComparison {
+	mal_id: string;
+	entry: RecommendationEntry[];
+	content: string;
+	date: string;
+	user: {
+		url: string;
+		username: string;
+	};
+}
+
+interface RecommendationEntry {
+    mal_id: number;
+    url: string;
+    images: {
+        jpg: {
+            image_url?: string;
+            small_image_url?: string;
+            large_image_url?: string;
+        };
+        webp: {
+            image_url?: string;
+            small_image_url?: string;
+            large_image_url?: string;
+        };
+    };
+    title: string;
+}
+export interface AnimeRecommendationProps {
+    data: AnimeRecommendationComparison
+}
+
 /*
 
 "data": {

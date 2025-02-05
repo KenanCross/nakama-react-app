@@ -2,6 +2,7 @@ import React from "react";
 import seasonFilter from "../components/seasonFilter/seasonFilter";
 import airingToday from "../components/airingToday/airingToday";
 import Top10 from "../components/top-ten/top-ten";
+import { CompareRecommendations } from "../components/recommendations/Recommendations";
 
 const Home: React.FC = () => {	
 	return (
@@ -12,6 +13,9 @@ const Home: React.FC = () => {
 			</div>
 			<div className="w-1/2">
 				{Top10('airing tv')}
+			</div>
+			<div>
+				{CompareRecommendations()}
 			</div>
 			<div>
 				{seasonFilter()}
