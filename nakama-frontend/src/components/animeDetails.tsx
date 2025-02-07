@@ -1,5 +1,6 @@
 import React from "react";
 import AnimeData from "../models/anime";
+import FeedInput from "./Reviews/feedInput";
 
 const AnimeDetails: React.FC<AnimeData> = ({
 	title,
@@ -33,6 +34,7 @@ const AnimeDetails: React.FC<AnimeData> = ({
 				<div>
 					<p>{synopsis}</p>
 				</div>
+				<div><FeedInput /></div>
 			</div>
 		</>
 	);
