@@ -1,15 +1,26 @@
-import React, { FC, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { RecommendationEntry} from "../../models/anime";
+import React, { FC } from "react";
+import { RecommendationEntry } from "../../models/anime";
 
-const Recommendation: FC<RecommendationEntry[]> = (data, loading) => {
-	
-	return (
-		data.map((entry, i) => {
-		let orderClass = i > 0 ? "order-last" : "order-first";
-		<div className={orderClass}>
-			<img src={entry.images["webp"].image_url} />
-		</div>;
-	});)
+interface RecommendationProps {
+    data: RecommendationEntry[];
+    loading: boolean;
+}
+
+const Recommendation: FC<RecommendationProps> = ({ data, loading }) => {
+    if (loading) return <p>Loading recommendations...</p>;
+
+    return (
+        <div className="recommendations-grid">
+            {data.map((entry, i) => {
+                let orderClass = i > 0 ? "order-last" : "order-first";
+                return (
+                    <div key={entry.mal_id} className={orderClass}>
+                        <img src={entry.images.webp.image_url} alt={entry.title} />
+                    </div>
+                );
+            })}
+        </div>
+    );
 };
-export default Recommendation
+
+export default Recommendation;

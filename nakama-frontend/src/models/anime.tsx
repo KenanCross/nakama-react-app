@@ -126,6 +126,15 @@ export interface AnimeRecommendationProps {
     data: AnimeRecommendationComparison
 }
 
+export interface AnimeRecommendation {
+    entry: {
+        mal_id: number;
+        title: string;
+        url: string;
+    };
+}
+
+
 /*
 
 "data": {
