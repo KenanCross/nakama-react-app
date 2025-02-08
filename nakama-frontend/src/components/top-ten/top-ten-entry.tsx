@@ -4,7 +4,7 @@ import AnimeData from "../../models/anime";
 
 const TopTenEntry: FC<AnimeData> = ({ mal_id, title, title_english, images, index}) => {
 	const image = images["webp"].image_url;
-	if (index <= 10) {
+	if (index! <= 10) {
 		return (
 			<Link to={`/anime/${mal_id}`}>
 				<div className='flex flex-row mb-2 justify-between items-center'>
