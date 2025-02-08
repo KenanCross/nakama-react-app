@@ -2,6 +2,7 @@ import React from "react";
 import AnimeData from "../models/anime";
 import { useParams } from "react-router-dom";
 import Recommendations from "./recommendations/Recommendations";
+import FeedInput from "./Reviews/feedInput";
 
 const AnimeDetails: React.FC<AnimeData> = ({
 	title,
@@ -39,6 +40,7 @@ const AnimeDetails: React.FC<AnimeData> = ({
 				<div>
 				<Recommendations animeId={id} />
 				</div>
+				<div><FeedInput /></div>
 			</div>
 		</>
 	);
