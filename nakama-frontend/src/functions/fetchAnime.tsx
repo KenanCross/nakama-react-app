@@ -131,56 +131,61 @@ export const useTopTen = (type: number, filter: number) => {
 };
 
 export const useGetRecommendations = (animeId?: string) => {
-  const [data, setData] = useState<AnimeRecommendationComparison[]>([]);
-  const [loading, setLoading] = useState(true);
+	const [data, setData] = useState<AnimeRecommendationComparison[]>([]);
+	const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  console.log(animeId)
+	// NOTE: No trailing slash to avoid 301 redirect and CORS issues.
+	let fetchUrl = `https://api.jikan.moe/v4/anime/${animeId}/recommendations`;
 
-  useEffect(() => {
-    if (!animeId) {
-      console.warn("🚨 No anime ID provided!");
-      setError("No anime ID provided.");
-      setLoading(false);
-      return;
-    }
+	useEffect(() => {
+		if (!animeId) {
+			// console.warn("🚨 No anime ID provided!");
+			// setError("No anime ID provided.");
+			// setLoading(false);
+			// return;
+			// NOTE: No trailing slash to avoid 301 redirect and CORS issues.
+			fetchUrl = `https://api.jikan.moe/v4/recommendations/anime`;
+		}
 
-    // NOTE: No trailing slash to avoid 301 redirect and CORS issues.
-    const fetchUrl = `https://api.jikan.moe/v4/anime/${animeId}/recommendations`;
-    console.log(`🔍 Fetching recommendations from: ${fetchUrl}`);
+		console.log(`🔍 Fetching recommendations from: ${fetchUrl}`);
 
-    const fetchAnimeData = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(fetchUrl);
-        if (!response.ok) {
-          throw new Error(`HTTP Error: ${response.status}`);
-        }
-        const json = await response.json();
-        if (!json.data || json.data.length === 0) {
-          console.warn("⚠️ No recommendations found.");
-          setData([]);
-          setError("No recommendations available for this anime.");
-          return;
-        }
-        const formattedData: AnimeRecommendationComparison[] = json.data.map((rec: any) => ({
-          mal_id: rec.entry.mal_id,
-          entry: Array.isArray(rec.entry) ? rec.entry : [rec.entry],
-          content: rec.content || "",
-          date: rec.date || "",
-          user: rec.user || { url: "", username: "Unknown" },
-        }));
-        console.log("✅ Extracted Recommendations:", formattedData);
-        setData(formattedData);
-        setError(null);
-      } catch (error) {
-        console.error("❌ Error fetching recommendations:", error);
-        setError("Failed to load recommendations. Try again later.");
-      } finally {
-        setLoading(false);
-      }
-    };
+		const fetchAnimeData = async () => {
+			try {
+				setLoading(true);
+				const response = await fetch(fetchUrl);
+				if (!response.ok) {
+					throw new Error(`HTTP Error: ${response.status}`);
+				}
+				const json = await response.json();
+				if (!json.data || json.data.length === 0) {
+					console.warn("⚠️ No recommendations found.");
+					setData([]);
+					setError("No recommendations available for this anime.");
+					return;
+				}
+				const formattedData: AnimeRecommendationComparison[] = json.data.map(
+					(rec: any) => ({
+						mal_id: rec.entry.mal_id,
+						entry: Array.isArray(rec.entry) ? rec.entry : [rec.entry],
+						content: rec.content || "",
+						date: rec.date || "",
+						user: rec.user || { url: "", username: "Unknown" },
+					})
+				);
+				console.log("✅ Extracted Recommendations:", formattedData);
+				setData(formattedData);
+				setError(null);
+			} catch (error) {
+				console.error("❌ Error fetching recommendations:", error);
+				setError("Failed to load recommendations. Try again later.");
+			} finally {
+				setLoading(false);
+			}
+		};
 
-    fetchAnimeData();
-  }, [animeId]);
+		fetchAnimeData();
+	}, [animeId]);
 
-  return { data, loading, error };
+	return { data, loading, error };
 };

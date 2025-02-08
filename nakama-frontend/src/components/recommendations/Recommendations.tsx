@@ -3,11 +3,11 @@ import { useGetRecommendations } from "../../functions/fetchAnime";
 import { AnimeRecommendationComparison, RecommendationEntry } from "../../models/anime";
 import Recommendation from "./Recommendation";
 
-interface ReccomendationsProps {
+interface RecommendationsProps {
   animeId: string;
 }
 
-const Reccomendations: FC<ReccomendationsProps> = ({ animeId }) => {
+const Recommendations: FC<RecommendationsProps> = ({ animeId }) => {
   const { data, loading, error } = useGetRecommendations(animeId);
   const [recData, setRecData] = useState<RecommendationEntry[] | null>(null);
 
@@ -16,8 +16,11 @@ const Reccomendations: FC<ReccomendationsProps> = ({ animeId }) => {
 
   useEffect(() => {
     if (!loading && data && data.length > 0) {
-      const recommendation = random(data);
-      if (recommendation) setRecData(recommendation.entry);
+      // const recommendation = random(data);
+      // if (recommendation) setRecData(recommendation.entry);
+      const extractedElements = data.map((item) => item.entry[0]);
+      setRecData(extractedElements)
+      
     }
   }, [loading, data]);
 
@@ -26,20 +29,23 @@ const Reccomendations: FC<ReccomendationsProps> = ({ animeId }) => {
   }
 
   return (
-    <>
-      {loading ? (
-        <p>Loading recommendations...</p>
-      ) : recData ? (
-        <div className="flex flex-col">
-          <div className="flex flex-row">
-            <Recommendation data={recData} loading={loading} />
-          </div>
-        </div>
-      ) : (
-        <p>No recommendations available.</p>
-      )}
-    </>
-  );
+		<>
+			{loading ? (
+				<span className='loading loading-bars loading-lg'></span>
+			) : recData ? (
+				<div className='flex flex-col my-20'>
+					<h3 className='text-2xl w-4/5 mb-5 pb-3 mx-auto border-b border-solid border-gray'>
+						Similar Titles
+					</h3>
+					<div className='flex flex-row gap-10 w-4/5  mx-auto'>
+						<Recommendation data={recData} loading={loading} />
+					</div>
+				</div>
+			) : (
+				<p>No recommendations available.</p>
+			)}
+		</>
+	);
 };
 
-export default Reccomendations;
+export default Recommendations;

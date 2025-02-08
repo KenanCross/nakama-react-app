@@ -2,7 +2,7 @@ import React from "react";
 import seasonFilter from "../components/seasonFilter/seasonFilter";
 import airingToday from "../components/airingToday/airingToday";
 import Top10 from "../components/top-ten/top-ten";
-import Reccomendations from "../components/recommendations/Recommendations";
+import RandomRecommendations from "../components/recommendations/RandomRecommendations";
 
 
 const Home: React.FC = () => {
@@ -16,8 +16,7 @@ const Home: React.FC = () => {
 		  {Top10("airing tv")}
 		</div>
 		<div>
-		  {/* Pass a valid anime ID here (replace "1" with a real ID if needed) */}
-		  <Reccomendations animeId="1" />
+			<RandomRecommendations />
 		</div>
 		<div>
 		  {seasonFilter()}
