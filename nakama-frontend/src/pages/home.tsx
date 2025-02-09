@@ -12,7 +12,7 @@ const Home: React.FC = () => {
 		  <h4 className="mb-3">Airing Today</h4>
 		  {airingToday()}
 		</div>
-		<div className="w-1/2">
+		<div className="w-full md:w-1/2">
 		  {Top10("airing tv")}
 		</div>
 		<div>

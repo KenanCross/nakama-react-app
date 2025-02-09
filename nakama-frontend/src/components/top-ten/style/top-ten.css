@@ -1,0 +1,21 @@
+
+.rank{
+    -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: rgb(148, 148, 148);
+  color: rgb(32, 32, 32);
+}
+
+.item{
+    background-color: #1c1c1c;
+    height: 78px;
+}
+
+.rank1{
+    background-color: goldenrod
+}
+.rank2{
+    background-color: silver;
+}
+.rank3{
+    background-color: rgb(104, 62, 13);
+}

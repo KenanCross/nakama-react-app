@@ -23,8 +23,21 @@ const Top10 = (type: string) => {
 				break;
 		}
 	const { data, loading } = useTopTen(media, filter);
-
-    return <>{loading ? <p>Loading data...</p> : <><h4 className="uppercase mb-1">TOP 10 {type}</h4> {TopTen(data!)}</>}</>;
+	console.log(data)
+	return (
+		<>
+			{loading ? (
+				<p>Loading data...</p>
+			) : (
+				<div className=''>
+					<h4 className='uppercase mb-3 font-opensans text-xl py-2 border-b'>
+						TOP 10 {type}
+					</h4>{" "}
+					{TopTen(data!)}
+				</div>
+			)}
+		</>
+	);
 };
 
 export default Top10;
