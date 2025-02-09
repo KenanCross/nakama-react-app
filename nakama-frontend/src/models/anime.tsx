@@ -29,7 +29,7 @@ export default interface AnimeData {
 	};
 	episodes?: number;
 	type?: string;
-    score?: number;
+    score?: number | string;
 	source?: string;
 	synopsis?: string;
 	background?: string;
