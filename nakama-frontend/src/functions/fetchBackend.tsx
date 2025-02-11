@@ -13,10 +13,10 @@ export const useGetUser = () => {
 	return user;
 };
 
-export const useGetReview = (userId: string) => {
+export const useGetReview = () => {
 	const [review, setReview] = useState();
 	useEffect(() => {
-		fetch(`fetchURL:${userId}`)
+		fetch(`http://localhost:3000/api/reviews/allReviews`)
 			.then((response) => response.json())
 			.then((data) => setReview(data))
 			.catch((error) => console.error("Error fetching review", error));

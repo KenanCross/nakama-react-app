@@ -1,9 +1,8 @@
-import { ObjectId } from "mongodb";
 import Anime from "./anime";
 import Review from "./review";
 
 interface User {
-	_id?: ObjectId | String;
+	_id?: string;
 	userName: string;
 	password: string;
 	favorites: Anime[];

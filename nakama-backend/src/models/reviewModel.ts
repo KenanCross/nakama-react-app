@@ -1,9 +1,17 @@
 import { ObjectId } from "mongodb";
+import User from "./user";
+import Anime from "./animeModel";
 
 export default interface Review {
-    // foreign Field
-    reviewId?: ObjectId | string;
-    // unique idetifier: localField
-    userId: ObjectId | string;
-    reviewBody: string;
-};
+	_id?: ObjectId | String;
+	userId: User["_id"];
+	type: "movie" | "tv" | "ona";
+	data: string;
+	review: string;
+	score: number;
+	entry: {
+		id: Anime["mal_id"];
+		title: Anime["title"];
+		imageUrl: Anime["imageURL"];
+	};
+}
