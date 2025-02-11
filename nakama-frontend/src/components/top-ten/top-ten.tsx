@@ -23,7 +23,6 @@ const Top10 = (type: string) => {
 				break;
 		}
 	const { data, loading } = useTopTen(media, filter);
-	console.log(data)
 	return (
 		<>
 			{loading ? (
