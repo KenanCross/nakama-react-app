@@ -1,12 +1,13 @@
-import React from "react"
-import Router from "./routes/Routes"
-import './App.css'
-
+import React from "react";
+import Router from "./routes/Routes";
+import './App.css';
 
 function App() {
   return (
-    <Router />
-  )
+    <div>
+      <Router />
+    </div>
+  );
 }
 
-export default App
+export default App;

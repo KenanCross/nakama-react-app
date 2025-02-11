@@ -18,10 +18,11 @@ export default {
 		fontFamily: {
 			sans: ["Graphik", "sans-serif"],
 			serif: ["Merriweather", "serif"],
+			londrina: ["Londrina Solid", "serif"],
+			opensans: ["Open Sans", "serif"],
+			oswald: ["Oswald", "serif"]
 		},
 		extend: {},
 	},
-	plugins: [
-		daisyui
-	],
+	plugins: [daisyui],
 } satisfies Config;

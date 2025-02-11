@@ -13,7 +13,9 @@ const TopTen: FC<AnimeDataArray> = ({ data }) => {
 						mal_id={data.mal_id}
 						title={data.title_english}
                     images={data.images}
-                    index = {index + 1 }
+					index={index + 1}
+					score={data.score}
+					rank={data.rank}
 					/>
 				))}
 			</div>
