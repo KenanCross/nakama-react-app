@@ -29,7 +29,7 @@ export default interface AnimeData {
 	};
 	episodes?: number;
 	type?: string;
-    score?: number;
+    score?: number | string;
 	source?: string;
 	synopsis?: string;
 	background?: string;
@@ -94,6 +94,47 @@ export interface AnimeDataArray {
     data: AnimeData[];
     index: number
 }
+
+export interface AnimeRecommendationComparison {
+	mal_id: string;
+	entry: RecommendationEntry[];
+	content: string;
+	date: string;
+	user: {
+		url: string;
+		username: string;
+	};
+}
+
+export interface RecommendationEntry {
+    mal_id: number;
+    url: string;
+    images: {
+        jpg: {
+            image_url?: string;
+            small_image_url?: string;
+            large_image_url?: string;
+        };
+        webp: {
+            image_url?: string;
+            small_image_url?: string;
+            large_image_url?: string;
+        };
+    };
+    title: string;
+}
+export interface AnimeRecommendationProps {
+    data: AnimeRecommendationComparison
+}
+
+export interface AnimeRecommendation {
+    entry: {
+        mal_id: number;
+        title: string;
+        url: string;
+    };
+}
+
 
 /*
 
