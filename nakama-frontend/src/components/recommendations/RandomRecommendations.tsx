@@ -32,7 +32,7 @@ const RandomRecommendations: FC = () => {
 			{loading ? (
 				<span className='loading loading-bars loading-lg'></span>
 			) : recData ? (
-				<div className='flex flex-col gap-10 w-4/5 my-20 mx-auto'>
+				<div className='flex flex-col gap-10 p-4 my-20 mx-auto'>
 					<div className='flex flex-row w-full grow'>
 						<Recommendation
 							data={entries}

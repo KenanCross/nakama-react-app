@@ -19,7 +19,7 @@ const Recommendation: FC<RecommendationProps> = ({ data, loading, user }) => {
 							let orderText = i > 0 ? `Then you might like...` : "If You Liked...";
 							return (
 								<div key={entry.mal_id} className={orderClass}>
-									<div className='grow w-2/5'>
+									<div className='grow w-[50%]'>
 										<p>{orderText}</p>
 										<h5 className='text-2xl'>{entry.title}</h5>
 									</div>
