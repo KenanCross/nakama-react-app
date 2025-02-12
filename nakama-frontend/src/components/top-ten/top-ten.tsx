@@ -26,7 +26,7 @@ const Top10 = (type: string) => {
 	return (
 		<>
 			{loading ? (
-				<p>Loading data...</p>
+				<span className='loading loading-spinner loading-md'></span>
 			) : (
 				<div className='p-4'>
 					<h4 className='uppercase mb-3 font-opensans text-xl py-2 border-b'>

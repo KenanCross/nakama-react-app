@@ -19,8 +19,8 @@ const CardItem: FC<AnimeData> = ({ mal_id, title, title_english, synopsis, image
 						{synopsis}
 					</p>
 					<div className='flex flex-row gap-2'>
-						{genres?.map((genre) => (
-							<div className='p-0.5 text-gray text-sm'>
+						{genres?.map((genre, index) => (
+							<div className='p-0.5 text-gray text-sm' key={index}>
 								{genre.name}
 							</div>
 						))}
