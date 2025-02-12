@@ -1,5 +1,25 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AnimeDataArray, AnimeRecommendationComparison } from "../models/anime";
+
+const RATE_LIMIT = {
+	perSecond: 3,
+	perMinute: 60,
+};
+
+let requestCount = {
+	second: 0,
+	minute: 0,
+};
+
+setInterval(() => {
+	requestCount.second = 0;
+}, 1000);
+
+setInterval(() => {
+	requestCount.minute = 0;
+}, 60000);
+
+const delay = 2000;
 
 export function getUniqueObjects<T>(array: T[], property: keyof T) {
   const seenValues = new Set();
@@ -17,6 +37,7 @@ export const useFilteredData = (type: number, continueFlag?: boolean, page?: num
   const [data, setData] = useState<AnimeDataArray | null>(null);
   const [loading, setLoading] = useState(true);
   const [lastPage, setLastPage] = useState<boolean | null>(null);
+  const lastExecuted = useRef(Date.now());
   const ongoing = continueFlag ? "&continuing" : "";
   const pageRef = page ? `&page=${page}` : "";
 
@@ -30,23 +51,46 @@ export const useFilteredData = (type: number, continueFlag?: boolean, page?: num
 
   useEffect(() => {
     const fetchAnimeData = async () => {
-      try {
-        console.log("Fetching seasonal anime...");
-        setLoading(true);
-        const response = await fetch(
-          `https://api.jikan.moe/v4/seasons/now?filter=${Object.values(filter)[type]}${ongoing}${pageRef}&sfw`
-        );
-        const json = await response.json();
-        if (!json.data) throw new Error("No anime data found");
+      console.log("Fetching seasonal anime...");
+			setLoading(true);
+      if (Date.now() - lastExecuted.current >= delay) {
+        lastExecuted.current = Date.now();
+        try {
+					const response = await fetch(
+						`https://api.jikan.moe/v4/seasons/now?filter=${Object.values(filter)[type]}${ongoing}${pageRef}&sfw`
+					);
+					const json = await response.json();
+					if (!json.data) throw new Error("No anime data found");
 
-        json.data = getUniqueObjects(json.data, "mal_id");
-        setData(json);
-        setLastPage(json.pagination?.has_next_page ?? null);
-      } catch (error) {
-        console.error("Error fetching anime details", error);
-      } finally {
-        setLoading(false);
-      }
+					json.data = getUniqueObjects(json.data, "mal_id");
+					setData(json);
+					setLastPage(json.pagination?.has_next_page ?? null);
+				} catch (error) {
+					console.error("Error fetching anime details", error);
+				} finally {
+					setLoading(false);
+				}
+			} else {
+				setTimeout(async () => {
+          lastExecuted.current = Date.now();
+          try {
+						const response = await fetch(
+							`https://api.jikan.moe/v4/seasons/now?filter=${Object.values(filter)[type]}${ongoing}${pageRef}&sfw`
+						);
+						const json = await response.json();
+						if (!json.data) throw new Error("No anime data found");
+
+						json.data = getUniqueObjects(json.data, "mal_id");
+						setData(json);
+						setLastPage(json.pagination?.has_next_page ?? null);
+					} catch (error) {
+						console.error("Error fetching anime details", error);
+					} finally {
+						setLoading(false);
+					}
+				}, delay);
+			}
+      
     };
     fetchAnimeData();
   }, [type, page, continueFlag]);
@@ -96,7 +140,8 @@ export const useTodaysShows = () => {
 
 export const useTopTen = (type: number, filter: number) => {
   const [data, setData] = useState<AnimeDataArray | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);  
+  const lastExecuted = useRef(Date.now());
 
   enum medium {
     tv,
@@ -115,21 +160,44 @@ export const useTopTen = (type: number, filter: number) => {
 
   useEffect(() => {
     const fetchAnimeData = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(
-          `https://api.jikan.moe/v4/top/anime?limit=15&type=${Object.values(medium)[type]}&filter=${Object.values(period)[filter]}&sfw`
-        );
-        const json = await response.json();
-        if (!json.data) throw new Error("No anime data found");
+      setLoading(true);
+      if (Date.now() - lastExecuted.current >= delay) {
+        lastExecuted.current = Date.now();
+        try {
+					const response = await fetch(
+						`https://api.jikan.moe/v4/top/anime?limit=15&type=${Object.values(medium)[type]}&filter=${Object.values(period)[filter]}&sfw`
+					);
+					const json = await response.json();
+					if (!json.data) throw new Error("No anime data found");
 
-        json.data = getUniqueObjects(json.data, "mal_id");
-        setData(json);
-      } catch (error) {
-        console.error("Error fetching anime details", error);
-      } finally {
-        setLoading(false);
-      }
+					json.data = getUniqueObjects(json.data, "mal_id");
+					setData(json);
+				} catch (error) {
+					console.error("Error fetching anime details", error);
+				} finally {
+					setLoading(false);
+				}
+			} else {
+				setTimeout(async () => {
+          lastExecuted.current = Date.now();
+          try {
+						const response = await fetch(
+							`https://api.jikan.moe/v4/top/anime?limit=15&type=${Object.values(medium)[type]}&filter=${Object.values(period)[filter]}&sfw`
+						);
+						const json = await response.json();
+						if (!json.data) throw new Error("No anime data found");
+
+						json.data = getUniqueObjects(json.data, "mal_id");
+						setData(json);
+					} catch (error) {
+						console.error("Error fetching anime details", error);
+					} finally {
+						setLoading(false);
+					}
+				}, delay);
+			}
+      console.log(data)
+      
     };
     fetchAnimeData();
   }, [type, filter]);

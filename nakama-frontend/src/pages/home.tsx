@@ -8,7 +8,10 @@ const Home: React.FC = () => {
 	return (
 		<div className='container mx-auto'>
 			<div className='mb-6'>{airingToday()}</div>
-			<div className='w-full md:w-1/2'>{Top10("airing tv")}</div>
+			<div className='flex flex-col gap-4 justify-center md:flex-row'>
+				{Top10("airing tv")}
+				{Top10("upcoming tv")}
+			</div>
 			<div>
 				<RandomRecommendations />
 			</div>

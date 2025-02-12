@@ -11,7 +11,8 @@ const TopTen: FC<AnimeDataArray> = ({ data }) => {
 					<TopTenEntry
 						key={data.mal_id}
 						mal_id={data.mal_id}
-						title={data.title_english}
+					title={data.title}
+					title_english={data.title_english}
                     images={data.images}
 					index={index + 1}
 					score={data.score}

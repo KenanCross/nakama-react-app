@@ -18,7 +18,7 @@ const TopTenEntry: FC<AnimeData> = ({ mal_id, title, title_english, images, inde
 						<h6 className='rank font-londrina'>{index}</h6>
 					</div>
 					<div className='w-14 flex-shrink-0 overflow-hidden'>
-						<img className='self-end h-auto' src={image} title={title} />
+						<img className='self-end h-auto' src={image} title={title} alt={title} />
 					</div>
 					<div className='px-3 flex flex-col flex-shrink-0 justify-center  '>
 						<h4 className='text-ellipsis overflow-hidden font-oswald text-xs md:text-sm font-medium text-[#fff] sm:text-base'>
