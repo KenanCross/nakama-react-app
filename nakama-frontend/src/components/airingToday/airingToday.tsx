@@ -1,14 +1,21 @@
-import { useState } from "react"
 import { useTodaysShows } from "../../functions/fetchAnime"
-import itemFilter from "../itemFilter/itemFilter"
-import { AnimeDataArray } from "../../models/anime"
+import ShowCards from "../ShowCards/ShowCards"
 
 const airingToday = () => {
-    const [data, setData] = useState<AnimeDataArray | null>(null);
+    
 
-    useTodaysShows(setData)
+    const { data, loading } = useTodaysShows();
 
-    return <>{data ? itemFilter(data!) : <p>Loading Data...</p>}</>;
+    return (
+			<>
+				{loading ? (
+					<span className='loading loading-bars loading-lg'></span>
+				) : (
+                    ShowCards(data!)
+                    
+				)}
+			</>
+		);
 }
 
 export default airingToday

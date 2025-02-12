@@ -54,7 +54,9 @@ export const useFilteredData = (type: number, continueFlag?: boolean, page?: num
   return { data, lastPage, loading };
 };
 
-export const useTodaysShows = (setData: (data: AnimeDataArray | null) => void) => {
+export const useTodaysShows = () => {  
+  const [data, setData] = useState<AnimeDataArray | null>(null);  
+  const [loading, setLoading] = useState(true);
   enum Days {
     Sunday,
     Monday,
@@ -70,21 +72,26 @@ export const useTodaysShows = (setData: (data: AnimeDataArray | null) => void) =
 
   useEffect(() => {
     const fetchAnimeData = async () => {
+      setLoading(true)
       try {
-        const response = await fetch(
-          `https://api.jikan.moe/v4/schedules?sfw=true&kids=false&page=1&filter=${Object.values(Days)[dayIndex]}`
-        );
-        const json = await response.json();
+				const response = await fetch(
+					`https://api.jikan.moe/v4/schedules?sfw=true&kids=false&page=1&filter=${Object.values(Days)[dayIndex]}`
+				);
+				const json = await response.json();
         if (!json.data) throw new Error("No anime data found");
-
-        json.data = getUniqueObjects(json.data, "mal_id");
-        setData(json);
-      } catch (error) {
-        console.error("Error fetching anime details", error);
-      }
+        console.log(json.data)
+				json.data = getUniqueObjects(json.data, "mal_id");
+				setData(json);
+			} catch (error) {
+				console.error("Error fetching anime details", error);
+			} finally {
+				setLoading(false);
+			}
     };
     fetchAnimeData();
   }, [dayIndex]);
+
+  return {data, loading}
 };
 
 export const useTopTen = (type: number, filter: number) => {
@@ -134,7 +141,6 @@ export const useGetRecommendations = (animeId?: string) => {
 	const [data, setData] = useState<AnimeRecommendationComparison[]>([]);
 	const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  console.log(animeId)
 	// NOTE: No trailing slash to avoid 301 redirect and CORS issues.
 	let fetchUrl = `https://api.jikan.moe/v4/anime/${animeId}/recommendations`;
 
@@ -148,7 +154,7 @@ export const useGetRecommendations = (animeId?: string) => {
 			fetchUrl = `https://api.jikan.moe/v4/recommendations/anime`;
 		}
 
-		console.log(`🔍 Fetching recommendations from: ${fetchUrl}`);
+		// console.log(`🔍 Fetching recommendations from: ${fetchUrl}`);
 
 		const fetchAnimeData = async () => {
 			try {
@@ -173,7 +179,7 @@ export const useGetRecommendations = (animeId?: string) => {
 						user: rec.user || { url: "", username: "Unknown" },
 					})
 				);
-				console.log("✅ Extracted Recommendations:", formattedData);
+				// console.log("✅ Extracted Recommendations:", formattedData);
 				setData(formattedData);
 				setError(null);
 			} catch (error) {

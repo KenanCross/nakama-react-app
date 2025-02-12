@@ -10,7 +10,7 @@ const RandomRecommendations: FC = () => {
 	const { data, loading, error } = useGetRecommendations();
     const [recData, setRecData] =
 			useState<AnimeRecommendationComparison | null>(null);
-    const [entries, setEntries] = useState<RecommendationEntry[]>();
+    const [entries, setEntries] = useState<RecommendationEntry[] | null>(null);
 
 	const random = (data: AnimeRecommendationComparison[]) =>
 		data.length > 0 ? data[Math.floor(Math.random() * data.length)] : null;
@@ -18,7 +18,7 @@ const RandomRecommendations: FC = () => {
 	useEffect(() => {
 		if (!loading && data && data.length > 0) {
             const recommendation = random(data);
-            console.log(recommendation)
+            // console.log(recommendation)
             if (recommendation) { setRecData(recommendation); setEntries(recommendation.entry); }
 		}
 	}, [loading, data]);
