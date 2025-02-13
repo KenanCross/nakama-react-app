@@ -34,15 +34,17 @@ const Recommendation: FC<RecommendationProps> = ({ data, loading, user }) => {
 							return (
 								<div
 									key={entry.mal_id}
-									className='border border-gray-500 outline-offset-4 rounded-t-lg flex-1'>
+									className='self-stretch basis-60 shrink-1'>
 									<Link to={`/anime/${entry.mal_id}`}>
 										<img
-											className='rounded-t-lg'
+											className='h-auto w-full'
 											src={entry.images.webp.image_url}
 											alt={entry.title}
 										/>
 									</Link>
-									<h5 className='w-4/5 py-2 m-auto text-sm text-center'>{entry.title}</h5>
+									<h5 className='w-4/5 py-2 m-auto text-sm text-center'>
+										{entry.title}
+									</h5>
 								</div>
 							);
 						})}

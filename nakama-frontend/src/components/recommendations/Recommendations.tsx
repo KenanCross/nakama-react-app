@@ -34,15 +34,15 @@ const Recommendations: FC<RecommendationsProps> = ({ animeId }) => {
 				<span className='loading loading-bars loading-lg'></span>
 			) : recData ? (
 				<div className='flex flex-col my-20'>
-					<h3 className='text-2xl w-4/5 mb-5 pb-3 mx-auto border-b border-solid border-gray'>
+					<h3 className='text-2xl w-full mb-5 pb-3 mx-auto border-b border-solid border-gray'>
 						Similar Titles
 					</h3>
-					<div className='flex flex-row gap-10 w-4/5  mx-auto'>
+					<div className='flex flex-row gap-10 w-full mx-auto'>
 						<Recommendation data={recData} loading={loading} />
 					</div>
 				</div>
 			) : (
-				<p>No recommendations available.</p>
+				<h3>No recommendations available.</h3>
 			)}
 		</>
 	);

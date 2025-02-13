@@ -36,7 +36,7 @@ reviewRouter.post('/reviews/post', async (req: any, res: any) => {
 
      const newReview = req.body;
 
-     const result = await usersCollection.insertMany([...newReview]);
+     const result = await usersCollection.insertOne(newReview);
 
 
      res.json({ message: `New Review(s) Created!` });
