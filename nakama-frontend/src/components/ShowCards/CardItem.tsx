@@ -34,9 +34,6 @@ const CardItem: FC<AnimeData> = ({ mal_id, title, title_english, synopsis, image
 							{rank} OVR
 						</div>
 					</div>
-					<div className='card-actions justify-end'>
-						{/* <button className='btn btn-primary'>Watch</button> */}
-					</div>
 				</div>
 			</div>
 		</>

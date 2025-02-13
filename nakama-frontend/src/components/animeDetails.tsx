@@ -3,7 +3,7 @@ import AnimeData from "../models/anime";
 import { useParams } from "react-router-dom";
 import Recommendations from "./recommendations/Recommendations";
 import FeedInput from "./Reviews/feedInput";
-import DataFetcher from "./reviewSection/reviewTextArea";
+import DataFetcher from "./Reviews/reviewTextArea";
 
 const AnimeDetails: React.FC<AnimeData> = ({
 	title,
@@ -82,11 +82,8 @@ const AnimeDetails: React.FC<AnimeData> = ({
 				<div>
 					<Recommendations animeId={id} />
 				</div>
-				<div>
+				<div className="pb-20">
 					<DataFetcher />
-				</div>
-				<div>
-					<FeedInput />
 				</div>
 				<div>
 					<FeedInput
