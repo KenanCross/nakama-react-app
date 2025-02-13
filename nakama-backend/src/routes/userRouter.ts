@@ -59,10 +59,13 @@ userRouter.get('/users/searchReviewsByUser', async (req: any, res: any) => {
             {
                 $lookup: {
                     from: "users",
-                    localField: "userId",
-                    foreignField: "_id",
+                    localField: "reviewId",
+                    foreignField: "userId",
                     as: "user_info"
                 }
+            },
+            {
+                $unwind: "$user_info"
             }
         ]).toArray();
 
