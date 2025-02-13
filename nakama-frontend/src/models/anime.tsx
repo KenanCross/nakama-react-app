@@ -37,7 +37,10 @@ export default interface AnimeData {
 	rank?: number;
 	season?: string;
 	year?: number;
-	airing?: boolean;
+    airing?: boolean;
+    aired?: {
+        string: string;
+    }
 	broadcast?: {
 		day?: string;
 		time?: string;
