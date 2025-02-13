@@ -1,4 +1,5 @@
 import { ObjectId } from "mongodb";
+import Review from "./reviewModel";
 import Anime from "./animeModel";
 
 export default interface User {
@@ -7,4 +8,5 @@ export default interface User {
     userName: string;
     password: string;
     favorites?: Anime[][number];
+    reviews: Review[];
 };

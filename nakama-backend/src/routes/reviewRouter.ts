@@ -13,7 +13,7 @@ const errorHandler = (error: any, res: any) => {
 
 reviewRouter.get('/reviews/allReviews', async (req: any, res: any) => {
     try {
-        await client.connect();
+        await client.connect(); 
         const reviewsCollection = client.db().collection<Review>('reviews');
 
         const result = await reviewsCollection.find({}).toArray();
