@@ -1,0 +1,37 @@
+{
+  "name": "functions",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "@google-cloud/storage": "^6.6.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "firebase-admin": "^12.7.0",
+    "firebase-functions": "^6.3.1",
+    "mongodb": "^6.13.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.26.8",
+    "@babel/generator": "^7.26.8",
+    "@babel/template": "^7.26.8",
+    "@babel/traverse": "^7.26.8",
+    "@types/caseless": "^0.12.5",
+    "@types/json-schema": "^7.0.15",
+    "@types/node": "^22.13.2",
+    "firebase-functions-test": "^3.4.0",
+    "firebase-tools": "^13.31.0",
+    "typescript": "^5.7.3"
+  },
+  "private": true
+}

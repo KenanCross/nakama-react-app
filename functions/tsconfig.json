@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "module": "CommonJS",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "rootDir": "src",  
+    "outDir": "lib",
+    "types": ["node", "json-schema", "caseless", "@babel/core", "@babel/generator", "@babel/template", "@babel/traverse"]
+  }
+}
