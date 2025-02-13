@@ -1,13 +1,10 @@
 import { ObjectId } from "mongodb";
-import Anime from "./anime";
-import Review from "./review";
+import Anime from "./animeModel";
 
-interface User {
-	_id?: ObjectId | String;
-	userName: string;
-	password: string;
-	favorites: Anime[];
-	reviews: Review[];
-}
-
-export default User;
+export default interface User {
+    // unique idetifier
+    userId?: ObjectId | string; 
+    userName: string;
+    password: string;
+    favorites?: Anime[][number];
+};
