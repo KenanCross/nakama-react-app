@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import Review from "./reviewModel";
+import {Review }from "./reviewModel";
 import Anime from "./animeModel";
 
 export default interface User {

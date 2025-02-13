@@ -1,23 +1,16 @@
-import React, { FC, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { useGetRecommendations } from "../../functions/fetchAnime";
 import { AnimeRecommendationComparison, RecommendationEntry } from "../../models/anime";
 import Recommendation from "./Recommendation";
 
-interface RecommendationsProps {
-  animeId: string;
-}
-
-const Recommendations: FC<RecommendationsProps> = ({ animeId }) => {
-  const { data, loading, error } = useGetRecommendations(animeId);
+const Recommendations = () => {  
+  const { id } = useParams<{ id: string }>();
+  const { data, loading, error } = useGetRecommendations(id);
   const [recData, setRecData] = useState<RecommendationEntry[] | null>(null);
-
-  const random = (data: AnimeRecommendationComparison[]) =>
-    data.length > 0 ? data[Math.floor(Math.random() * data.length)] : null;
-
+  
   useEffect(() => {
     if (!loading && data && data.length > 0) {
-      // const recommendation = random(data);
-      // if (recommendation) setRecData(recommendation.entry);
       const extractedElements = data.map((item) => item.entry[0]);
       setRecData(extractedElements)
       

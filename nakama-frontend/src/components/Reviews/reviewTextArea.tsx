@@ -45,7 +45,7 @@ const DataFetcher: React.FC = () => {
 						className='card card-side bg-base-100 shadow-sm'
 						key={review._id}>
 						<figure>
-							{/* <img src={review.entry.imageUrl ? review.entry.imageUrl : ''} alt={review.entry.title} /> */}
+							<img src={review.entry.imageUrl ? review.entry.imageUrl : ''} alt={review.entry.title} />
 						</figure>
 						<div className='card-body w-[65%]'>
 							<p>{review.review}</p>

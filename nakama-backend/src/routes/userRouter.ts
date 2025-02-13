@@ -1,6 +1,6 @@
 import { MongoClient, ObjectId } from "mongodb";
 import User from "../models/user";
-import Review from "../models/reviewModel";
+import {Review} from "../models/reviewModel";
 import express from "express";
 import dotenv from "dotenv";
 

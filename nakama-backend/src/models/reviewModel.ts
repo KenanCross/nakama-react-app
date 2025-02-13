@@ -1,17 +1,15 @@
 import { ObjectId } from "mongodb";
 import User from "./user";
-import Anime from "./animeModel";
-
-export default interface Review {
+export interface Review {
 	_id?: ObjectId | String;
 	userId: User["_id"];
-	type: "movie" | "tv" | "ona";
+	type: string;
 	data: string;
 	review: string;
 	score: number;
 	entry: {
-		id: Anime["mal_id"];
-		title: Anime["title"];
-		imageUrl: Anime["imageURL"];
+		id: number;
+		title: string;
+		imageUrl: string;
 	};
 }

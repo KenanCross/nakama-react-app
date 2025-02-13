@@ -1,9 +1,9 @@
 import React from "react";
 import AnimeData from "../models/anime";
-import { useParams } from "react-router-dom";
 import Recommendations from "./recommendations/Recommendations";
 import FeedInput from "./Reviews/feedInput";
 import DataFetcher from "./Reviews/reviewTextArea";
+import { ReviewFeed } from "./Reviews/feed";
 
 const AnimeDetails: React.FC<AnimeData> = ({
 	title,
@@ -24,7 +24,6 @@ const AnimeDetails: React.FC<AnimeData> = ({
 	aired,
 	status,
 }) => {
-	const { id } = useParams<{ id: string }>();
 	let statusClass;
 	let airInfo;
 	switch (status) {
@@ -80,16 +79,13 @@ const AnimeDetails: React.FC<AnimeData> = ({
 				</div>
 
 				<div>
-					<Recommendations animeId={id} />
-				</div>
-				<div className="pb-20">
-					<DataFetcher />
+					<Recommendations  />
 				</div>
 				<div>
 					<FeedInput
-						title={title}
-						type={type}
-						imageUrl={images["webp"].small_image_url}
+						type={type!}
+						title={title_english ? title_english : title!}
+						imageURL={images["webp"].small_image_url!}
 					/>
 				</div>
 			</div>
