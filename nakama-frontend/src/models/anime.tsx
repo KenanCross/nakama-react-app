@@ -90,6 +90,15 @@ export default interface AnimeData {
     index?: number
 }
 
+export interface Anime {
+	mal_id: number;
+	title: string;
+	imageURL: string;
+	score: number;
+	type: string;
+}
+
+
 export interface AnimeDataArray {
     data: AnimeData[];
     index: number
