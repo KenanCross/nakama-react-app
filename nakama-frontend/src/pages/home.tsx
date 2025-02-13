@@ -4,26 +4,20 @@ import airingToday from "../components/airingToday/airingToday";
 import Top10 from "../components/top-ten/top-ten";
 import RandomRecommendations from "../components/recommendations/RandomRecommendations";
 
-import ReviewFetchTest from "../components/ReviewFetchTest";
-
 const Home: React.FC = () => {
 	return (
-	  <div className="container mx-auto">
-		<div className="mb-6">
-		  <h4 className="mb-3">Airing Today</h4>
-		  {airingToday()}
+		<div className='container mx-auto'>
+			<div className='mb-6'>{airingToday()}</div>
+			<div className='flex flex-col gap-4 justify-center md:flex-row'>
+				{Top10("airing tv")}
+				{Top10("upcoming tv")}
+			</div>
+			<div>
+				<RandomRecommendations />
+			</div>
+			<div>{seasonFilter()}</div>
 		</div>
-		<div className="w-full md:w-1/2">
-		  {Top10("airing tv")}
-		</div>
-		<div>
-			<RandomRecommendations />
-		</div>
-		<div>
-		  {seasonFilter()}
-		</div>
-	  </div>
 	);
-  };
-  
-  export default Home;
+};
+
+export default Home;

@@ -4,19 +4,20 @@ import ItemEntry from "./itemEntry";
 
 const itemsList: React.FC<AnimeDataArray> = ({data}) => {
     return (
-			<div className='flex flex-col gap-3 justify-center md:flex-row flex-wrap'>
+			<>
 				{
 					//.entries(animeList).map();
-					data.map((data) => (
+				data.map((data) => (
 						<ItemEntry
 							key={data.mal_id}
 							mal_id={data.mal_id}
-							title={data.title_english}
+						title_english={data.title_english}
+						title = {data.title}
 							images={data.images}
 						/>
 					))
 				}
-			</div>
+			</>
 		);
 }
 

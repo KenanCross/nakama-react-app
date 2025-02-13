@@ -27,6 +27,8 @@ reviewRouter.get('/reviews/allReviews', async (req: any, res: any) => {
     }
 });
 
+// Get search by query:
+
 reviewRouter.post('/reviews/post', async (req: any, res: any) => {
     try {
      await client.connect();
@@ -35,6 +37,7 @@ reviewRouter.post('/reviews/post', async (req: any, res: any) => {
      const newReview = req.body;
 
      const result = await usersCollection.insertMany([...newReview]);
+
 
      res.json({ message: `New Review(s) Created!` });
 

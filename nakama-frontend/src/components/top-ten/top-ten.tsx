@@ -23,13 +23,12 @@ const Top10 = (type: string) => {
 				break;
 		}
 	const { data, loading } = useTopTen(media, filter);
-	console.log(data)
 	return (
 		<>
 			{loading ? (
-				<p>Loading data...</p>
+				<span className='loading loading-spinner loading-md'></span>
 			) : (
-				<div className=''>
+				<div className='p-4'>
 					<h4 className='uppercase mb-3 font-opensans text-xl py-2 border-b'>
 						TOP 10 {type}
 					</h4>{" "}

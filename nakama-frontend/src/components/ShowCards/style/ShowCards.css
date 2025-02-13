@@ -1,0 +1,30 @@
+.embla {
+  overflow: hidden;
+}
+.embla__container {
+  display: flex;
+  gap: 15px;
+}
+.embla__slide {
+  flex: 0 0 95%; /* Slide covers 50% of the viewport */
+  min-width: 0;
+  margin-right: 20px;
+  overflow: hidden;
+}
+
+.embla__slide img{
+  width: 100%;
+  height: 100%;
+}
+
+@media (min-width: 768px) {
+  .embla__slide {
+    flex: 0 0 75%; /* Breakpoint SM slide covers 50% of the viewport */
+  }
+}
+
+@media (min-width: 1024px) {
+  .embla__slide {
+    flex: 0 0 50%; /* Breakpoint SM slide covers 50% of the viewport */
+  }
+}

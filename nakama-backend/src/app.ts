@@ -3,6 +3,7 @@ import reviewRouter from "./routes/reviewRouter";
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+// import cors from "cors":
 
 dotenv.config();
 
