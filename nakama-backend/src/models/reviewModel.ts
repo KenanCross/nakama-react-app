@@ -1,7 +1,8 @@
 import { ObjectId } from "mongodb";
 import User from "./user";
-import Anime from "./anime";
-interface Review {
+import Anime from "./animeModel";
+
+export default interface Review {
 	_id?: ObjectId | String;
 	userId: User["_id"];
 	type: "movie" | "tv" | "ona";
@@ -14,5 +15,3 @@ interface Review {
 		imageUrl: Anime["imageURL"];
 	};
 }
-
-export default Review

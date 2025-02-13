@@ -3,6 +3,7 @@ import AnimeData from "../models/anime";
 import { useParams } from "react-router-dom";
 import Recommendations from "./recommendations/Recommendations";
 import FeedInput from "./Reviews/feedInput";
+import DataFetcher from "./reviewSection/reviewTextArea";
 
 const AnimeDetails: React.FC<AnimeData> = ({
 	title,
@@ -21,7 +22,7 @@ const AnimeDetails: React.FC<AnimeData> = ({
 	season,
 	broadcast,
 	aired,
-	status
+	status,
 }) => {
 	const { id } = useParams<{ id: string }>();
 	let statusClass;
@@ -29,15 +30,15 @@ const AnimeDetails: React.FC<AnimeData> = ({
 	switch (status) {
 		case "Currently Airing":
 			statusClass = "bg-green text-neutral-800";
-			airInfo = season + ' ' +  year
+			airInfo = season + " " + year;
 			break;
 		case "Finished Airing":
 			statusClass = "bg-gray text-neutral-800";
-			airInfo = 'Airdate: ' + aired?.string
+			airInfo = "Airdate: " + aired?.string;
 			break;
 		case "Not yet aired":
 			statusClass = "bg-blue text-neutral-800";
-			airInfo = "Tentatively Scheduled " + aired?.string.slice(0,4)
+			airInfo = "Tentatively Scheduled " + aired?.string.slice(0, 4);
 			break;
 	}
 	return (
@@ -82,7 +83,17 @@ const AnimeDetails: React.FC<AnimeData> = ({
 					<Recommendations animeId={id} />
 				</div>
 				<div>
+					<DataFetcher />
+				</div>
+				<div>
 					<FeedInput />
+				</div>
+				<div>
+					<FeedInput
+						title={title}
+						type={type}
+						imageUrl={images["webp"].small_image_url}
+					/>
 				</div>
 			</div>
 		</>
