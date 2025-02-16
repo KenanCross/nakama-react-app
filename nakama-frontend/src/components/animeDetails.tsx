@@ -1,8 +1,7 @@
-import React from "react";
+import React, {useState} from "react";
 import AnimeData from "../models/anime";
 import Recommendations from "./recommendations/Recommendations";
 import FeedInput from "./Reviews/feedInput";
-import DataFetcher from "./Reviews/reviewTextArea";
 import { ReviewFeed } from "./Reviews/feed";
 
 const AnimeDetails: React.FC<AnimeData> = ({
@@ -24,6 +23,8 @@ const AnimeDetails: React.FC<AnimeData> = ({
 	aired,
 	status,
 }) => {
+	
+	const [getReviews, setGetReviews] = useState(false);
 	let statusClass;
 	let airInfo;
 	switch (status) {
@@ -79,13 +80,24 @@ const AnimeDetails: React.FC<AnimeData> = ({
 				</div>
 
 				<div>
-					<Recommendations  />
+					<Recommendations />
+				</div>
+				<div className='pb-20'>
+					<h3 className='text-2xl w-full mb-5 pb-3 mx-auto border-b border-solid border-gray'>
+						Reviews
+					</h3>
+					<ReviewFeed
+						updateReviews={getReviews}
+						setUpdateReviews={setGetReviews}
+					/>
 				</div>
 				<div>
 					<FeedInput
 						type={type!}
 						title={title_english ? title_english : title!}
 						imageURL={images["webp"].small_image_url!}
+						setGetReviews={setGetReviews}
+						getReviews={getReviews}
 					/>
 				</div>
 			</div>

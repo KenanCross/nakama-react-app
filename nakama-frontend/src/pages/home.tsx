@@ -3,6 +3,7 @@ import seasonFilter from "../components/seasonFilter/seasonFilter";
 import airingToday from "../components/airingToday/airingToday";
 import Top10 from "../components/top-ten/top-ten";
 import RandomRecommendations from "../components/recommendations/RandomRecommendations";
+import GetAllReviews from "../components/Reviews/feedAll";
 
 const Home: React.FC = () => {
 	return (
@@ -14,6 +15,9 @@ const Home: React.FC = () => {
 			</div>
 			<div>
 				<RandomRecommendations />
+			</div>
+			<div>
+				<GetAllReviews />
 			</div>
 			<div>{seasonFilter()}</div>
 		</div>
