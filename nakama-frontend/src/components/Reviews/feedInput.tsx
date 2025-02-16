@@ -1,19 +1,25 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { ReviewFeed } from "./feed";
 
 interface FeedInputProps {
 	title: string;
 	imageURL: string;
 	type: string;
+	getReviews: boolean;
+	setGetReviews: any;
 }
 
-const FeedInput = ({ title, imageURL, type }: FeedInputProps) => {
+const FeedInput = ({
+	title,
+	imageURL,
+	type,
+	getReviews,
+	setGetReviews,
+}: FeedInputProps) => {
 	// storing the :
 	const [review, setReview] = useState("");
 	const [score, setScore] = useState(0);
-	const [getReviews, setGetReviews] = useState(false);
 	const { id } = useParams<{ id: string }>();
 
 	// handler function:
@@ -25,21 +31,20 @@ const FeedInput = ({ title, imageURL, type }: FeedInputProps) => {
 				type,
 				score,
 				entry: {
-					id: id,
+					id: parseInt(id!),
 					title: title,
 					imageUrl: imageURL,
 				},
 			})
-			.then((res) => console.log("Review Added!", res.data))
-      .catch((error) => console.error(`ERROR: ${error}`));
-    setGetReviews(!getReviews)
+			.then((res) => {
+				console.log("Review Added!", res.data);
+				setGetReviews(true);
+			})
+			.catch((error) => console.error(`ERROR: ${error}`));
+		setScore(0);
 	};
 	return (
 		<>
-			<div className='pb-20'>
-				<ReviewFeed updateReviews={getReviews} setUpdateReviews={setGetReviews} />
-			</div>
-
 			<form onSubmit={handleSubmit}>
 				<div className='flex flex-col w-8/12 items-center gap-2 m-auto'>
 					<div className='flex flex-row items-center pb-4'>

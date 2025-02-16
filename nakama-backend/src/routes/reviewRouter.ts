@@ -16,10 +16,15 @@ reviewRouter.get("/reviews/:id", async (req: any, res: any) => {
 		const reviewsCollection = client.db().collection<Review>("reviews");
 
 		const result = await reviewsCollection
-			.find({ entry: { id: req.params.id } })
+			.find({ "entry.id": parseInt(req.params.id) })
 			.toArray();
 		if (result.length === 0) {
-			res.status(404).json({ message: "No Reviews" });
+			res
+				.status(404)
+				.json({
+					message: "Be The First To Leave A Review!",
+					id: req.params.id,
+				});
 		} else {
 			res.status(200).json(result);
 		}
@@ -30,12 +35,12 @@ reviewRouter.get("/reviews/:id", async (req: any, res: any) => {
 	}
 });
 
-reviewRouter.get("/reviews/allReviews", async (req: any, res: any) => {
+reviewRouter.get("/reviews/", async (req: any, res: any) => {
 	try {
 		await client.connect();
 		const reviewsCollection = client.db().collection<Review>("reviews");
 
-		const result = await reviewsCollection.find({}).toArray();
+		const result = await reviewsCollection.find().toArray();
 
 		res.json(result).status(200);
 	} catch (error) {

@@ -6,16 +6,11 @@ import NavBar from "../components/navBar/NavBar";
 
 const Router: React.FC = () => {
 	return (
-		<>
-			
-				  
-			<BrowserRouter>
-			<NavBar />
+		<>			
 			<Routes>
 				<Route path='/' element={<Home />} />
 				<Route path='/anime/:id' element={<Anime />} />
 			</Routes>
-			</BrowserRouter>
 		</>
 	);
 		

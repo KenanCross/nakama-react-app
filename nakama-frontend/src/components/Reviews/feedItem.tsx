@@ -4,12 +4,28 @@ import "./style/feed.css";
 
 interface ReviewSlideProps {
 	data: Review[];
+	usePicture?: boolean;
 }
 
-export const ReviewSlides = ({ data }: ReviewSlideProps) => {
+export const ReviewSlides = ({ data, usePicture }: ReviewSlideProps) => {
 	return (
 		<>
-			{data.map((review) => (
+			{usePicture ?
+			
+				data.map((review) => (
+					<div
+						className='card card-side bg-base-100 shadow-sm'
+						key={review._id}>
+						<figure>
+							<img src={review.entry.imageUrl ? review.entry.imageUrl : ''} alt={review.entry.title} />
+						</figure>
+						<div className='card-body w-[65%]'>
+							<p>{review.review}</p>
+						</div>
+					</div>
+				)) :
+			
+			data.map((review) => (
 				<div className='card card-lg bg-base-100 shadow-sm' key={review._id}>
 					<div className='card-body'>
 						<h2 className='card-title'></h2>
