@@ -34,7 +34,7 @@ reviewRouter.get("/reviews/:id", async (req, res) => {
 });
 
 // Get all reviews
-reviewRouter.get("/allReviews", async (req, res) => {
+reviewRouter.get("/reviews/", async (req, res) => {
     try {
         const reviewsCollection = db.collection<Review>("reviews");
         const result = await reviewsCollection.find({}).toArray();
