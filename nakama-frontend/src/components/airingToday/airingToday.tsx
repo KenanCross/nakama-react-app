@@ -4,7 +4,7 @@ import ShowCards from "../ShowCards/ShowCards";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 
-const airingToday = () => {
+const AiringToday = () => {
 	const { data, loading } = useTodaysShows();
 	const [emblaRef] = useEmblaCarousel({ loop: true }, [
 		Autoplay({ delay: 5000 }),
@@ -28,4 +28,4 @@ const airingToday = () => {
 	);
 };
 
-export default airingToday;
+export default AiringToday;

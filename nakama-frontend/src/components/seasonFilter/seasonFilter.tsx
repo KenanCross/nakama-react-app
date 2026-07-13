@@ -1,8 +1,8 @@
 import { useState} from "react";
-import itemsList from "../itemList/itemsList";
+import ItemsList from "../itemList/itemsList";
 import { useFilteredData } from "../../functions/fetchAnime";
 
-const seasonFilter = () => {
+const SeasonFilter = () => {
 	const [seasonFilter, setSeasonFilter] = useState(0); //Add Filtering Functionality to itemList/itemFilter component.
 	const [page, setPage] = useState(1);
 	const [continueFlag, setContinueFlag] = useState(false);
@@ -87,9 +87,9 @@ const seasonFilter = () => {
 			</div>
 			<div className='flex flex-row gap-2 md:gap-3 h-auto min-h-[1556px] justify-center flex-wrap'>
 				{loading ? (
-					<span className='loading loading-bars loading-lg'></span>
+				<span className='loading loading-bars loading-lg'></span>
 				) : (
-					itemsList(data!)
+				<ItemsList data={data!.data} index={0} />
 				)}
 			</div>
 			<div className='my-5 join justify-center xl:hidden '>
@@ -111,4 +111,4 @@ const seasonFilter = () => {
 	);
 };
 
-export default seasonFilter;
+export default SeasonFilter;

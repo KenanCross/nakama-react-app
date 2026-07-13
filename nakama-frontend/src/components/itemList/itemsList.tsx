@@ -2,7 +2,7 @@ import React from "react";
 import {AnimeDataArray} from "../../models/anime";
 import ItemEntry from "./itemEntry";
 
-const itemsList: React.FC<AnimeDataArray> = ({data}) => {
+const ItemsList: React.FC<AnimeDataArray> = ({data}) => {
     return (
 			<>
 				{
@@ -21,4 +21,4 @@ const itemsList: React.FC<AnimeDataArray> = ({data}) => {
 		);
 }
 
-export default itemsList;
+export default ItemsList;
