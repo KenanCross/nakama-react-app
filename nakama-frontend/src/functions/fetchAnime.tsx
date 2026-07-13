@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { AnimeDataArray, AnimeRecommendationComparison } from "../models/anime";
+import { cachedFetch } from "./apiCache";
 
 const DELAY = 2000;
 
 // Shared utility: runs fetchFn immediately if enough time has passed since
-// lastExecuted, otherwise waits and runs it after the remaining delay.
+// lastExecuted, otherwise waits out the remaining delay before running it.
 const fetchWithDelay = (
 	lastExecuted: React.MutableRefObject<number>,
 	fetchFn: () => Promise<void>
@@ -34,7 +35,10 @@ export function getUniqueObjects<T>(array: T[], property: keyof T) {
 export const useFilteredData = (type: number, continueFlag?: boolean, page?: number) => {
 	const [data, setData] = useState<AnimeDataArray | null>(null);
 	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
 	const [lastPage, setLastPage] = useState<boolean | null>(null);
+	// retryCount is incremented by refetch() to re-trigger the useEffect.
+	const [retryCount, setRetryCount] = useState(0);
 	const lastExecuted = useRef(Date.now());
 	const ongoing = continueFlag ? "&continuing" : "";
 	const pageRef = page ? `&page=${page}` : "";
@@ -47,35 +51,39 @@ export const useFilteredData = (type: number, continueFlag?: boolean, page?: num
 		special,
 	}
 
+	const refetch = useCallback(() => setRetryCount((c) => c + 1), []);
+
 	useEffect(() => {
 		setLoading(true);
+		setError(null);
 
 		const fetchAnimeData = async () => {
 			try {
-				const response = await fetch(
+				const json = await cachedFetch(
 					`https://api.jikan.moe/v4/seasons/now?filter=${Object.values(filter)[type]}${ongoing}${pageRef}&sfw`
 				);
-				const json = await response.json();
 				if (!json.data) throw new Error("No anime data found");
 				json.data = getUniqueObjects(json.data, "mal_id");
 				setData(json);
 				setLastPage(json.pagination?.has_next_page ?? null);
-			} catch (error) {
-				console.error("Error fetching seasonal anime:", error);
+			} catch (err) {
+				setError((err as Error).message ?? "Failed to load seasonal anime.");
 			} finally {
 				setLoading(false);
 			}
 		};
 
 		fetchWithDelay(lastExecuted, fetchAnimeData);
-	}, [type, page, continueFlag]);
+	}, [type, page, continueFlag, retryCount]);
 
-	return { data, lastPage, loading };
+	return { data, lastPage, loading, error, refetch };
 };
 
 export const useTodaysShows = () => {
 	const [data, setData] = useState<AnimeDataArray | null>(null);
 	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+	const [retryCount, setRetryCount] = useState(0);
 
 	enum Days {
 		Sunday,
@@ -89,34 +97,37 @@ export const useTodaysShows = () => {
 
 	const today = new Date();
 	const dayIndex = today.getDay();
+	const refetch = useCallback(() => setRetryCount((c) => c + 1), []);
 
 	useEffect(() => {
 		const fetchAnimeData = async () => {
 			setLoading(true);
+			setError(null);
 			try {
-				const response = await fetch(
+				const json = await cachedFetch(
 					`https://api.jikan.moe/v4/schedules?sfw=true&kids=false&page=1&filter=${Object.values(Days)[dayIndex]}`
 				);
-				const json = await response.json();
 				if (!json.data) throw new Error("No anime data found");
 				json.data = getUniqueObjects(json.data, "mal_id");
 				setData(json);
-			} catch (error) {
-				console.error("Error fetching today's shows:", error);
+			} catch (err) {
+				setError((err as Error).message ?? "Failed to load today's shows.");
 			} finally {
 				setLoading(false);
 			}
 		};
 
 		fetchAnimeData();
-	}, [dayIndex]);
+	}, [dayIndex, retryCount]);
 
-	return { data, loading };
+	return { data, loading, error, refetch };
 };
 
 export const useTopTen = (type: number, filter: number) => {
 	const [data, setData] = useState<AnimeDataArray | null>(null);
 	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+	const [retryCount, setRetryCount] = useState(0);
 	const lastExecuted = useRef(Date.now());
 
 	enum medium {
@@ -134,38 +145,43 @@ export const useTopTen = (type: number, filter: number) => {
 		favorite,
 	}
 
+	const refetch = useCallback(() => setRetryCount((c) => c + 1), []);
+
 	useEffect(() => {
 		setLoading(true);
+		setError(null);
 
 		const fetchAnimeData = async () => {
 			try {
-				const response = await fetch(
+				const json = await cachedFetch(
 					`https://api.jikan.moe/v4/top/anime?limit=15&type=${Object.values(medium)[type]}&filter=${Object.values(period)[filter]}&sfw`
 				);
-				const json = await response.json();
 				if (!json.data) throw new Error("No anime data found");
 				json.data = getUniqueObjects(json.data, "mal_id");
 				setData(json);
-			} catch (error) {
-				console.error("Error fetching top anime:", error);
+			} catch (err) {
+				setError((err as Error).message ?? "Failed to load top anime.");
 			} finally {
 				setLoading(false);
 			}
 		};
 
 		fetchWithDelay(lastExecuted, fetchAnimeData);
-	}, [type, filter]);
+	}, [type, filter, retryCount]);
 
-	return { data, loading };
+	return { data, loading, error, refetch };
 };
 
 export const useGetRecommendations = (animeId?: string) => {
 	const [data, setData] = useState<AnimeRecommendationComparison[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
+	const [retryCount, setRetryCount] = useState(0);
+
+	const refetch = useCallback(() => setRetryCount((c) => c + 1), []);
 
 	useEffect(() => {
-		// Derive the URL inside the effect so it's always fresh and in sync
+		// Derive the URL inside the effect so it's always fresh and in sync.
 		const fetchUrl = animeId
 			? `https://api.jikan.moe/v4/anime/${animeId}/recommendations`
 			: `https://api.jikan.moe/v4/recommendations/anime`;
@@ -173,10 +189,8 @@ export const useGetRecommendations = (animeId?: string) => {
 		const fetchAnimeData = async () => {
 			try {
 				setLoading(true);
-				const response = await fetch(fetchUrl);
-				if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
-
-				const json = await response.json();
+				setError(null);
+				const json = await cachedFetch(fetchUrl);
 				if (!json.data || json.data.length === 0) {
 					setData([]);
 					setError("No recommendations available for this anime.");
@@ -194,17 +208,15 @@ export const useGetRecommendations = (animeId?: string) => {
 				);
 
 				setData(formattedData);
-				setError(null);
-			} catch (error) {
-				console.error("Error fetching recommendations:", error);
-				setError("Failed to load recommendations. Try again later.");
+			} catch (err) {
+				setError((err as Error).message ?? "Failed to load recommendations.");
 			} finally {
 				setLoading(false);
 			}
 		};
 
 		fetchAnimeData();
-	}, [animeId]);
+	}, [animeId, retryCount]);
 
-	return { data, loading, error };
+	return { data, loading, error, refetch };
 };

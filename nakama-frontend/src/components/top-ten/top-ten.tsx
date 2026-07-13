@@ -1,6 +1,7 @@
 import React from "react";
 import { useTopTen } from "../../functions/fetchAnime";
 import TopTen from "./top-ten-container";
+import ErrorMessage from "../ErrorMessage";
 
 interface Top10Props {
 	type: string;
@@ -27,7 +28,10 @@ const Top10: React.FC<Top10Props> = ({ type }) => {
 			filter = 1;
 			break;
 	}
-	const { data, loading } = useTopTen(media, filter);
+	const { data, loading, error, refetch } = useTopTen(media, filter);
+
+	if (error) return <ErrorMessage message={error} onRetry={refetch} />;
+
 	return (
 		<>
 			{loading ? (

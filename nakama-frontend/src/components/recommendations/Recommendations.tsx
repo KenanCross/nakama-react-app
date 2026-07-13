@@ -3,10 +3,11 @@ import { useParams } from "react-router-dom";
 import { useGetRecommendations } from "../../functions/fetchAnime";
 import { AnimeRecommendationComparison, RecommendationEntry } from "../../models/anime";
 import Recommendation from "./Recommendation";
+import ErrorMessage from "../ErrorMessage";
 
 const Recommendations = () => {  
   const { id } = useParams<{ id: string }>();
-  const { data, loading, error } = useGetRecommendations(id);
+  const { data, loading, error, refetch } = useGetRecommendations(id);
   const [recData, setRecData] = useState<RecommendationEntry[] | null>(null);
   
   useEffect(() => {
@@ -18,7 +19,7 @@ const Recommendations = () => {
   }, [loading, data]);
 
   if (error) {
-    return <p>{error}</p>;
+    return <ErrorMessage message={error} onRetry={refetch} />;
   }
 
   return (

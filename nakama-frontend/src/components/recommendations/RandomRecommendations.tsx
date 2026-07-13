@@ -5,9 +5,10 @@ import {
 	RecommendationEntry,
 } from "../../models/anime";
 import Recommendation from "./Recommendation";
+import ErrorMessage from "../ErrorMessage";
 
 const RandomRecommendations: FC = () => {
-	const { data, loading, error } = useGetRecommendations();
+	const { data, loading, error, refetch } = useGetRecommendations();
     const [recData, setRecData] =
 			useState<AnimeRecommendationComparison | null>(null);
     const [entries, setEntries] = useState<RecommendationEntry[] | null>(null);
@@ -18,13 +19,12 @@ const RandomRecommendations: FC = () => {
 	useEffect(() => {
 		if (!loading && data && data.length > 0) {
             const recommendation = random(data);
-            // console.log(recommendation)
             if (recommendation) { setRecData(recommendation); setEntries(recommendation.entry); }
 		}
 	}, [loading, data]);
 
 	if (error) {
-		return <p>{error}</p>;
+		return <ErrorMessage message={error} onRetry={refetch} />;
 	}
 
 	return (

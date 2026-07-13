@@ -1,6 +1,7 @@
 import { useState} from "react";
 import ItemsList from "../itemList/itemsList";
 import { useFilteredData } from "../../functions/fetchAnime";
+import ErrorMessage from "../ErrorMessage";
 
 const SeasonFilter = () => {
 	const [seasonFilter, setSeasonFilter] = useState(0); //Add Filtering Functionality to itemList/itemFilter component.
@@ -8,7 +9,7 @@ const SeasonFilter = () => {
 	const [continueFlag, setContinueFlag] = useState(false);
 	const [isChecked, setChecked] = useState(false)
 	const [isDisabled, setIsDisabled] = useState(false);
-	const { data, loading, lastPage } = useFilteredData(
+	const { data, loading, lastPage, error, refetch } = useFilteredData(
 		seasonFilter,
 		continueFlag,
 		page
@@ -30,6 +31,8 @@ const SeasonFilter = () => {
 		setContinueFlag(!continueFlag)
 		setChecked(!isChecked);
 	}
+
+	if (error) return <ErrorMessage message={error} onRetry={refetch} />;
 
 	return (
 		<div className='mb-6 p-2 flex flex-col gap-3 max-w-[90rem] min-h-96'>

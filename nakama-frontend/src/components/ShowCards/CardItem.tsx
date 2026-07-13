@@ -18,12 +18,12 @@ const CardItem: FC<AnimeData> = ({ mal_id, title, title_english, synopsis, image
 					<p className='line-clamp-5 truncate text-wrap text-xs sm:text-sm'>
 						{synopsis}
 					</p>
-					<div className='flex flex-row gap-2'>
-						{genres?.map((genre, index) => (
-							<div className='p-0.5 text-gray text-sm' key={index}>
-								{genre.name}
-							</div>
-						))}
+					<div className='flex flex-row flex-wrap gap-1.5'>
+					{genres?.map((genre, index) => (
+					<span className='badge badge-outline badge-xs uppercase tracking-wide' key={index}>
+					{genre.name}
+					</span>
+					))}
 					</div>
 
 					<div className='flex flex-row gap-1'>

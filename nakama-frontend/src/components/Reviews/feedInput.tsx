@@ -36,8 +36,7 @@ const FeedInput = ({
 					imageUrl: imageURL,
 				},
 			})
-			.then((res) => {
-				console.log("Review Added!", res.data);
+		.then(() => {
 				setGetReviews(true);
 			})
 			.catch((error) => console.error(`ERROR: ${error}`));

@@ -1,14 +1,16 @@
 import { useTodaysShows } from "../../functions/fetchAnime";
 import ShowCards from "../ShowCards/ShowCards";
-
+import ErrorMessage from "../ErrorMessage";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 
 const AiringToday = () => {
-	const { data, loading } = useTodaysShows();
+	const { data, loading, error, refetch } = useTodaysShows();
 	const [emblaRef] = useEmblaCarousel({ loop: true }, [
 		Autoplay({ delay: 5000 }),
 	]);
+
+	if (error) return <ErrorMessage message={error} onRetry={refetch} />;
 
 	return (
 		<>
@@ -20,7 +22,10 @@ const AiringToday = () => {
 						SHOWS AIRING TODAY
 					</h4>
 					<div className='embla' ref={emblaRef}>
-						<div className='embla__container'>{ShowCards(data!)}</div>
+						<div className='embla__container'>
+							{/* ShowCards rendered as JSX, not called as a function */}
+							<ShowCards data={data!.data} index={0} />
+						</div>
 					</div>
 				</>
 			)}

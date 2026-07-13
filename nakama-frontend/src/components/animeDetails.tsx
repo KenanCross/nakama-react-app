@@ -59,12 +59,12 @@ const AnimeDetails: React.FC<AnimeData> = ({
 						<h3 className='text-lg font-semibold'>
 							JPN: {title} | {title_japanese}
 						</h3>
-						<div className='flex flex-row gap-2'>
-							{genres?.map((genre, index) => (
-								<div className='p-0.5 uppercase' key={index}>
-									{genre.name}
-								</div>
-							))}
+						<div className='flex flex-row flex-wrap gap-2'>
+						{genres?.map((genre, index) => (
+						<span className='badge badge-outline badge-sm uppercase tracking-wide' key={index}>
+						{genre.name}
+						</span>
+						))}
 						</div>
 						<div className='' id='information'>
 							<div className='uppercase text-xl'>{airInfo}</div>
