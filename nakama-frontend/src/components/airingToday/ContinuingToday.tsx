@@ -1,22 +1,20 @@
-import { useTodaysShows } from "../../functions/fetchAnime";
+import { useContinuingShows } from "../../functions/fetchAnime";
 import ShowCards from "../ShowCards/ShowCards";
 import ErrorMessage from "../ErrorMessage";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { useEffect } from "react";
 
-interface AiringTodayProps {
+interface ContinuingTodayProps {
 	onLoaded?: () => void;
 }
 
-const AiringToday = ({ onLoaded }: AiringTodayProps) => {
-	const { data, loading, error, refetch } = useTodaysShows();
+const ContinuingToday = ({ onLoaded }: ContinuingTodayProps) => {
+	const { data, loading, error, refetch } = useContinuingShows();
 	const [emblaRef] = useEmblaCarousel({ loop: true }, [
 		Autoplay({ delay: 5000 }),
 	]);
 
-	// Signal to the parent (Home) that we're done — whether we succeeded
-	// or errored — so it knows it's safe to mount the next components.
 	useEffect(() => {
 		if (!loading && onLoaded) {
 			onLoaded();
@@ -32,7 +30,7 @@ const AiringToday = ({ onLoaded }: AiringTodayProps) => {
 			) : (
 				<>
 					<h4 className='uppercase mb-3 font-opensans text-xl py-2 border-b'>
-						SHOWS AIRING TODAY
+						CONTINUING SHOWS
 					</h4>
 					<div className='embla' ref={emblaRef}>
 						<div className='embla__container'>
@@ -45,4 +43,4 @@ const AiringToday = ({ onLoaded }: AiringTodayProps) => {
 	);
 };
 
-export default AiringToday;
+export default ContinuingToday;

@@ -1,26 +1,29 @@
-import React, { FC, useState } from "react";
-import { getUniqueObjects } from "../../functions/fetchAnime";
+import React, { FC } from "react";
 import TopTenEntry from "./top-ten-entry";
 import { AnimeDataArray } from "../../models/anime";
 
-const TopTen: FC<AnimeDataArray> = ({ data }) => {
-
-    return (
-			<div className="flex flex-col">
-            {data.map((data, index) => (
-					<TopTenEntry
-						key={data.mal_id}
-						mal_id={data.mal_id}
-					title={data.title}
-					title_english={data.title_english}
-                    images={data.images}
-					index={index + 1}
-					score={data.score}
-					rank={data.rank}
-					/>
-				))}
-			</div>
-		);
+interface TopTenProps extends AnimeDataArray {
+	showStats?: boolean;
 }
 
-export default TopTen
+const TopTen: FC<TopTenProps> = ({ data, showStats = true }) => {
+	return (
+		<div className="flex flex-col">
+			{data.map((item, index) => (
+				<TopTenEntry
+					key={`${item.mal_id}-${index}`}
+					mal_id={item.mal_id}
+					title={item.title}
+					title_english={item.title_english}
+					images={item.images}
+					index={index + 1}
+					score={item.score}
+					rank={item.rank}
+					showStats={showStats}
+				/>
+			))}
+		</div>
+	);
+};
+
+export default TopTen;

@@ -1,13 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useTopTen } from "../../functions/fetchAnime";
 import TopTen from "./top-ten-container";
 import ErrorMessage from "../ErrorMessage";
 
 interface Top10Props {
 	type: string;
+	onLoaded?: () => void;
+	showStats?: boolean;
 }
 
-const Top10: React.FC<Top10Props> = ({ type }) => {
+const Top10: React.FC<Top10Props> = ({ type, onLoaded, showStats = true }) => {
 	let media = 0;
 	let filter = 0;
 	switch (type) {
@@ -30,6 +32,12 @@ const Top10: React.FC<Top10Props> = ({ type }) => {
 	}
 	const { data, loading, error, refetch } = useTopTen(media, filter);
 
+	useEffect(() => {
+		if (!loading && onLoaded) {
+			onLoaded();
+		}
+	}, [loading]);
+
 	if (error) return <ErrorMessage message={error} onRetry={refetch} />;
 
 	return (
@@ -41,7 +49,7 @@ const Top10: React.FC<Top10Props> = ({ type }) => {
 					<h4 className='uppercase mb-3 font-opensans text-xl py-2 border-b'>
 						TOP 10 {type}
 					</h4>
-					<TopTen data={data!.data} index={0} />
+					<TopTen data={data!.data} index={0} showStats={showStats} />
 				</div>
 			)}
 		</>

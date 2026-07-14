@@ -1,100 +1,107 @@
-import { MongoClient, ObjectId } from "mongodb";
+import { ObjectId } from "mongodb";
 import User from "../models/user";
-import {Review} from "../models/reviewModel";
+import { Review } from "../models/reviewModel";
 import express from "express";
-import dotenv from "dotenv";
+import { db } from "../db";
 
-dotenv.config();
-const client = new MongoClient(process.env.MONGODB_URI!);
 const userRouter = express.Router();
+
 const errorHandler = (error: any, res: any) => {
-    res.json({ message: `ERROR: ${error}`});
+	console.error(error);
+	res.status(500).json({ message: `ERROR: ${error}` });
 };
 
-
-//get all Users:
-userRouter.get('/users/allUsers', async (req: any, res: any) => {
-    try {
-        await client.connect();
-        const usersCollection = client.db().collection<User>('users');
-
-        const result = await usersCollection.find({}).toArray();
-
-        res.json(result).status(200);
-        
-       } catch(error) {
-           errorHandler(error, res);
-       } finally {
-           await client.close();
-       }
+// GET all users — NOTE: returns passwords in plain text.
+// This route should be removed or protected before any kind of deployment.
+userRouter.get("/users/allUsers", async (req: any, res: any) => {
+	try {
+		const usersCollection = db().collection<User>("users");
+		const result = await usersCollection.find({}).toArray();
+		res.status(200).json(result);
+	} catch (error) {
+		errorHandler(error, res);
+	}
 });
 
-// Search by query:
-userRouter.get('/users/search', async (req: any, res: any) => {
-    try {
-        await client.connect();
-        const usersCollection = client.db().collection<User>('users');
+// GET users by userName — partial, case-insensitive match using a regex.
+// e.g. GET /users/search?userName=ken  returns all users whose name contains "ken"
+userRouter.get("/users/search", async (req: any, res: any) => {
+	const { userName } = req.query;
 
-        const query: any = {};
+	if (!userName || typeof userName !== "string") {
+		return res.status(400).json({ message: "userName query parameter is required" });
+	}
 
-        const result = await usersCollection.find( query ).toArray();
-
-        res.json(result).status(200);
-        
-       } catch(error) {
-           errorHandler(error, res);
-       } finally {
-           await client.close();
-       }
+	try {
+		const usersCollection = db().collection<User>("users");
+		const query = { userName: { $regex: userName, $options: "i" } };
+		const result = await usersCollection.find(query).toArray();
+		res.status(200).json(result);
+	} catch (error) {
+		errorHandler(error, res);
+	}
 });
 
-// joining...
-userRouter.get('/users/searchReviewsByUser', async (req: any, res: any) => {
-    try {
-        await client.connect();
-        const usersCollection = client.db().collection<User>('users');
-        const reviewsCollection = client.db().collection<Review>('reviews');
+// GET reviews joined with user info via MongoDB aggregation ($lookup)
+userRouter.get("/users/searchReviewsByUser", async (req: any, res: any) => {
+	try {
+		const reviewsCollection = db().collection<Review>("reviews");
+		const result = await reviewsCollection.aggregate([
+			{
+				$lookup: {
+					from: "users",
+					localField: "userId",
+					foreignField: "_id",
+					as: "user_info",
+				},
+			},
+			{
+				$unwind: {
+					path: "$user_info",
+					// Keep reviews that have no matching user rather than
+					// silently dropping them (the original used a strict $unwind)
+					preserveNullAndEmptyArrays: true,
+				},
+			},
+		]).toArray();
 
-        const result = await reviewsCollection.aggregate([
-            {
-                $lookup: {
-                    from: "users",
-                    localField: "reviewId",
-                    foreignField: "userId",
-                    as: "user_info"
-                }
-            },
-            {
-                $unwind: "$user_info"
-            }
-        ]).toArray();
-
-        res.json(result).status(200);
-
-       } catch(error) {
-           errorHandler(error, res);
-       } finally {
-           await client.close();
-       }
+		res.status(200).json(result);
+	} catch (error) {
+		errorHandler(error, res);
+	}
 });
 
+// POST create a new user — insertOne, not insertMany
+userRouter.post("/users/post", async (req: any, res: any) => {
+	const { userName, password } = req.body;
 
-userRouter.post('/users/post', async (req: any, res: any) => {
-    try {
-     await client.connect();
-     const usersCollection = client.db().collection<User>('users');
+	if (!userName || typeof userName !== "string" || userName.trim() === "") {
+		return res.status(400).json({ message: "userName is required" });
+	}
+	if (!password || typeof password !== "string" || password.length < 6) {
+		return res.status(400).json({ message: "password must be at least 6 characters" });
+	}
 
-     const newUser = req.body;
+	try {
+		const usersCollection = db().collection<User>("users");
 
-     const result = await usersCollection.insertMany(newUser);
+		// Check for duplicate userName before inserting
+		const existing = await usersCollection.findOne({ userName: userName.trim() });
+		if (existing) {
+			return res.status(409).json({ message: "Username already taken" });
+		}
 
-     res.json({ message: `New User(s) Created!` });
+		const newUser: User = {
+			userName: userName.trim(),
+			password, // TODO: hash this with bcrypt before any real deployment
+			reviews: [],
+		};
 
-    } catch(error) {
-        errorHandler(error, res);
-    } finally {
-        await client.close();
-    }
+		await usersCollection.insertOne(newUser);
+		res.status(201).json({ message: "User created!" });
+	} catch (error) {
+		errorHandler(error, res);
+	}
 });
 
 export default userRouter;

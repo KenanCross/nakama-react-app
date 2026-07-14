@@ -6,17 +6,17 @@ import "./style/ShowCards.css"
 const ShowCards: FC<AnimeDataArray> = ({ data }) => {
 	return (
 		<>
-			{data.map((data) => (
+			{data.map((item, index) => (
 				<CardItem
-					key={data.mal_id}
-					mal_id={data.mal_id}
-					title={data.title}
-					title_english={data.title_english}
-					synopsis={data.synopsis}
-					images={data.images}
-					score={data.score}
-					rank={data.rank}
-					genres={data.genres}
+					key={`${item.mal_id}-${index}`}
+					mal_id={item.mal_id}
+					title={item.title}
+					title_english={item.title_english}
+					synopsis={item.synopsis}
+					images={item.images}
+					score={item.score}
+					rank={item.rank}
+					genres={item.genres}
 				/>
 			))}
 		</>

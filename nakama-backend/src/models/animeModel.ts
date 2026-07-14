@@ -1,5 +1,3 @@
-import { ObjectId } from "mongodb";
-
 export default interface Anime {
     mal_id: number;
     title: string;

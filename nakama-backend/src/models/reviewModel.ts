@@ -1,7 +1,8 @@
 import { ObjectId } from "mongodb";
 import User from "./user";
+
 export interface Review {
-	_id?: ObjectId | String;
+	_id?: ObjectId | string;
 	userId: User["_id"];
 	type: string;
 	data: string;
