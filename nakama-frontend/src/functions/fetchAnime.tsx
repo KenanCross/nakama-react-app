@@ -20,11 +20,53 @@ export function getUniqueObjects<T>(array: T[], property: keyof T) {
 // Object.values() on a numeric enum returns [0,1,2,...,"Name1","Name2",...]
 // which means index lookups silently return numbers instead of the strings
 // Jikan expects. Plain arrays are unambiguous.
-const DAYS = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
 const MEDIA_TYPES = ["tv", "movie", "ona", "ova", "special"];
 const SEASON_FILTERS = ["tv", "movie", "ona", "ova", "special"];
 const CURRENT_SEASON_URL = "https://api.jikan.moe/v4/seasons/now?sfw=true&limit=25";
-const MAX_SCHEDULE_PAGES = 4;
+const CONTINUING_SEASON_URL = "https://api.jikan.moe/v4/seasons/now?continuing=true&sfw=true&limit=25";
+const MAX_SEASON_PAGES = 4;
+const ANILIST_GRAPHQL_URL = "https://graphql.anilist.co";
+const ANILIST_AIRING_TODAY_QUERY = `
+	query AiringToday($start: Int, $end: Int) {
+		Page(page: 1, perPage: 50) {
+			airingSchedules(
+				airingAt_greater: $start
+				airingAt_lesser: $end
+				sort: TIME
+			) {
+				airingAt
+				episode
+				media {
+					id
+					idMal
+					title {
+						romaji
+						english
+						native
+					}
+					description(asHtml: false)
+					averageScore
+					meanScore
+					genres
+					status
+					type
+					format
+					season
+					seasonYear
+					coverImage {
+						large
+						medium
+					}
+					rankings {
+						rank
+						type
+						allTime
+					}
+				}
+			}
+		}
+	}
+`;
 
 interface JikanAnimeResponse {
 	data?: AnimeData[];
@@ -48,12 +90,67 @@ interface JikanRecommendationResponse {
 	data?: JikanRecommendation[];
 }
 
-const getTodaySchedule = () => {
-	const today = new Date();
-	const scheduleDay = DAYS[today.getDay()];
-	const broadcastDay = `${today.toLocaleDateString("en-US", { weekday: "long" })}s`;
+interface AniListTitle {
+	romaji?: string | null;
+	english?: string | null;
+	native?: string | null;
+}
 
-	return { scheduleDay, broadcastDay };
+interface AniListRanking {
+	rank: number;
+	type: "RATED" | "POPULAR";
+	allTime: boolean;
+}
+
+interface AniListMedia {
+	id: number;
+	idMal?: number | null;
+	title: AniListTitle;
+	description?: string | null;
+	averageScore?: number | null;
+	meanScore?: number | null;
+	genres?: string[] | null;
+	status?: string | null;
+	type?: string | null;
+	format?: string | null;
+	season?: string | null;
+	seasonYear?: number | null;
+	coverImage?: {
+		large?: string | null;
+		medium?: string | null;
+	} | null;
+	rankings?: AniListRanking[] | null;
+}
+
+interface AniListAiringSchedule {
+	airingAt: number;
+	episode?: number | null;
+	media?: AniListMedia | null;
+}
+
+interface AniListAiringTodayResponse {
+	data?: {
+		Page?: {
+			airingSchedules?: AniListAiringSchedule[] | null;
+		} | null;
+	};
+	errors?: {
+		message: string;
+		status?: number;
+	}[];
+}
+
+const getTodayTimeRange = () => {
+	const start = new Date();
+	start.setHours(0, 0, 0, 0);
+
+	const end = new Date(start);
+	end.setHours(23, 59, 59, 999);
+
+	return {
+		start: Math.floor(start.getTime() / 1000),
+		end: Math.floor(end.getTime() / 1000),
+	};
 };
 
 const hasAnimeData = (response: JikanAnimeResponse): response is JikanAnimeResponse & { data: AnimeData[] } => {
@@ -66,14 +163,12 @@ const fetchAnimePage = async (url: string) => {
 	return response;
 };
 
-const fetchSchedulePages = async (scheduleDay: string) => {
+const fetchSeasonPages = async (baseUrl: string) => {
 	const pages: AnimeData[] = [];
 	let latestResponse: JikanAnimeResponse | null = null;
 
-	for (let page = 1; page <= MAX_SCHEDULE_PAGES; page += 1) {
-		const response = await fetchAnimePage(
-			`https://api.jikan.moe/v4/schedules/${scheduleDay}?sfw=true&limit=25&page=${page}`,
-		);
+	for (let page = 1; page <= MAX_SEASON_PAGES; page += 1) {
+		const response = await fetchAnimePage(`${baseUrl}&page=${page}`);
 
 		pages.push(...response.data);
 		latestResponse = response;
@@ -87,14 +182,107 @@ const fetchSchedulePages = async (scheduleDay: string) => {
 	};
 };
 
-const getShowsBroadcastingOn = (shows: AnimeData[], broadcastDay: string) => {
-	return shows.filter((anime) => anime.broadcast?.day === broadcastDay);
-};
-
 const getScoreValue = (score: AnimeData["score"]) => {
 	if (typeof score === "number") return score;
 	if (typeof score === "string") return Number(score) || 0;
 	return 0;
+};
+
+const stripHtml = (value?: string | null) => {
+	if (!value) return "";
+	return value.replace(/<[^>]*>/g, "").trim();
+};
+
+const getPreferredAniListRank = (rankings?: AniListRanking[] | null) => {
+	return rankings?.find((ranking) => ranking.type === "RATED" && ranking.allTime)?.rank
+		?? rankings?.find((ranking) => ranking.type === "RATED")?.rank
+		?? rankings?.find((ranking) => ranking.type === "POPULAR")?.rank;
+};
+
+const getAniListScore = (media: AniListMedia) => {
+	const score = media.averageScore ?? media.meanScore;
+	return score ? Number((score / 10).toFixed(1)) : undefined;
+};
+
+const mapAniListScheduleToAnimeData = (schedule: AniListAiringSchedule): AnimeData | null => {
+	const media = schedule.media;
+	if (!media?.idMal) return null;
+
+	const imageUrl = media.coverImage?.large ?? media.coverImage?.medium ?? "";
+	const title = media.title.romaji ?? media.title.english ?? media.title.native ?? "Untitled";
+
+	return {
+		mal_id: media.idMal,
+		title,
+		title_english: media.title.english ?? undefined,
+		images: {
+			jpg: {
+				image_url: imageUrl,
+				small_image_url: media.coverImage?.medium ?? imageUrl,
+				large_image_url: imageUrl,
+			},
+			webp: {
+				image_url: imageUrl,
+				small_image_url: media.coverImage?.medium ?? imageUrl,
+				large_image_url: imageUrl,
+			},
+		},
+		episodes: schedule.episode ?? undefined,
+		type: media.format ?? media.type ?? undefined,
+		score: getAniListScore(media),
+		synopsis: stripHtml(media.description),
+		rank: getPreferredAniListRank(media.rankings),
+		season: media.season?.toLowerCase(),
+		year: media.seasonYear ?? undefined,
+		airing: media.status === "RELEASING",
+		broadcast: {
+			time: new Date(schedule.airingAt * 1000).toLocaleTimeString("en-US", {
+				hour: "numeric",
+				minute: "2-digit",
+			}),
+			string: `Episode ${schedule.episode ?? "?"}`,
+		},
+		status: media.status ?? undefined,
+		genres: media.genres?.map((genre) => ({
+			name: genre,
+		})) as AnimeData["genres"],
+	};
+};
+
+const fetchAniListAiringToday = async () => {
+	const { start, end } = getTodayTimeRange();
+	const response = await fetch(ANILIST_GRAPHQL_URL, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			Accept: "application/json",
+		},
+		body: JSON.stringify({
+			query: ANILIST_AIRING_TODAY_QUERY,
+			variables: { start, end },
+		}),
+	});
+
+	const json = await response.json() as AniListAiringTodayResponse;
+	if (!response.ok || json.errors?.length) {
+		throw new Error(json.errors?.[0]?.message ?? `AniList request failed (${response.status})`);
+	}
+
+	const schedules = json.data?.Page?.airingSchedules ?? [];
+	const mappedData = getUniqueObjects(
+		schedules.flatMap((schedule) => {
+			const anime = mapAniListScheduleToAnimeData(schedule);
+			return anime ? [anime] : [];
+		}),
+		"mal_id",
+	);
+
+	return {
+		raw: json,
+		schedules,
+		data: mappedData,
+		index: 0,
+	};
 };
 
 export const useFilteredData = (type: number, continueFlag?: boolean, page?: number) => {
@@ -149,29 +337,27 @@ export const useTodaysShows = () => {
 		setError(null);
 
 		const loadTodaysShows = async () => {
-			const { scheduleDay, broadcastDay } = getTodaySchedule();
-
 			try {
-				const [scheduleResult, seasonResult] = await Promise.allSettled([
-					fetchSchedulePages(scheduleDay),
-					fetchAnimePage(CURRENT_SEASON_URL),
-				]);
-				const scheduleResponse = scheduleResult.status === "fulfilled"
-					? scheduleResult.value
-					: { data: [], index: 0 };
-				const seasonResponse = seasonResult.status === "fulfilled"
-					? seasonResult.value
-					: { data: [], index: 0 };
-				const currentSeasonShows = getShowsBroadcastingOn(seasonResponse.data, broadcastDay);
-				const combinedShows = getUniqueObjects(
-					[...scheduleResponse.data, ...currentSeasonShows],
-					"mal_id",
-				);
-				const finalData = combinedShows.length > 0 ? combinedShows : seasonResponse.data;
-				if (finalData.length === 0) throw new Error("No anime data found");
+				const airingToday = await fetchAniListAiringToday();
+				if (airingToday.data.length === 0) throw new Error("No anime data found");
 
 				if (!isMounted) return;
-				setData({ ...scheduleResponse, data: finalData, index: scheduleResponse.index ?? 0 });
+				console.groupCollapsed("[useTodaysShows] AniList airing today");
+				console.log("raw response:", airingToday.raw);
+				console.log("airing schedule count:", airingToday.schedules.length);
+				console.log("mapped carousel count:", airingToday.data.length);
+				console.table(airingToday.data.map((anime) => ({
+					mal_id: anime.mal_id,
+					title: anime.title,
+					broadcastTime: anime.broadcast?.time,
+					season: anime.season,
+					year: anime.year,
+					status: anime.status,
+					score: anime.score,
+				})));
+				console.log("final data:", airingToday.data);
+				console.groupEnd();
+				setData({ data: airingToday.data, index: airingToday.index });
 			} catch (err) {
 				console.error("[useTodaysShows] error:", err);
 				if (!isMounted) return;
@@ -206,19 +392,17 @@ export const useContinuingShows = () => {
 		setError(null);
 
 		const loadContinuingShows = async () => {
-			const { scheduleDay } = getTodaySchedule();
-
 			try {
-				const scheduleResponse = await fetchSchedulePages(scheduleDay);
-				const currentSeasonResponse = await fetchAnimePage(CURRENT_SEASON_URL);
+				const continuingResponse = await fetchSeasonPages(CONTINUING_SEASON_URL);
+				const currentSeasonResponse = await fetchSeasonPages(CURRENT_SEASON_URL);
 				const currentSeasonIds = new Set(currentSeasonResponse.data.map((anime) => anime.mal_id));
-				const continuingShows = scheduleResponse.data.filter((anime) => !currentSeasonIds.has(anime.mal_id));
+				const continuingShows = continuingResponse.data.filter((anime) => !currentSeasonIds.has(anime.mal_id));
 
 				if (!isMounted) return;
 				setData({
-					...scheduleResponse,
+					...continuingResponse,
 					data: getUniqueObjects(continuingShows, "mal_id"),
-					index: scheduleResponse.index ?? 0,
+					index: continuingResponse.index ?? 0,
 				});
 			} catch (err) {
 				console.error("[useContinuingShows] error:", err);
