@@ -64,7 +64,7 @@ Before editing, inspect:
 
 ## Verification
 
-Run the scripts that exist in `frontend/package.json`, typically:
+Run the scripts that exist in `nakama-frontend/package.json`, typically:
 
 - install dependencies only when required
 - type checking

@@ -2,13 +2,16 @@
 
 ## Repository Overview
 
-This repository contains a Firebase-hosted application with separate frontend
-and backend TypeScript projects.
+This repository contains a React frontend, an intended standalone backend, and
+experimental Firebase Functions work for cloud deployment evaluation.
 
 - `nakama-frontend/` contains the browser application. 
-- `nakama-backend/` contains the server-side application and API logic. 
-- `firebase.json` defines Firebase hosting, functions, emulators, rewrites,
-  and deployment configuration.
+- `nakama-backend/` contains the intended server-side application and API
+  logic.
+- `functions/` contains an experimental Firebase Functions implementation.
+- The root `firebase.json` defines Firebase Functions configuration.
+- `nakama-frontend/firebase.json` defines frontend Firebase Hosting
+  configuration and SPA rewrites.
 
 Always inspect the relevant package.json, tsconfig.json, and local AGENTS.md
 before modifying either application.
@@ -16,8 +19,8 @@ before modifying either application.
 ## Working Scope
 
 - Open and reason about the repository from the root.
-- Determine whether a task affects the frontend, backend, Firebase
-  configuration, or more than one area.
+- Determine whether a task affects the frontend, intended backend,
+  experimental Functions code, Firebase configuration, or more than one area.
 - Keep changes limited to the affected application unless cross-project
   changes are required.
 - Explain cross-project implications before changing both applications.
@@ -45,6 +48,9 @@ Before proposing Firebase configuration changes, explain:
 4. Whether it changes deployment behavior.
 5. Whether manual Firebase Console work is required.
 
+Treat `functions/` as experimental unless the user explicitly asks to promote
+or productionize it. `nakama-backend/` is the intended application backend.
+
 ## Shared Contracts
 
 - Keep frontend and backend API contracts synchronized.
@@ -66,7 +72,7 @@ Before proposing Firebase configuration changes, explain:
 
 For frontend-only changes, run the frontend checks.
 
-For backend-only changes, run the backend checks.
+For backend-only changes, run the `nakama-backend/` checks.
 
 For changes affecting Firebase integration or both applications, run checks
 for both projects and explain any emulator or manual verification required.

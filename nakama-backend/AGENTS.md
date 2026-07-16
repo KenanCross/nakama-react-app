@@ -2,7 +2,7 @@
 
 ## Scope
 
-These instructions apply to everything under `backend/`.
+These instructions apply to everything under `nakama-backend/`.
 
 Before editing, inspect:
 
@@ -77,7 +77,7 @@ Before editing, inspect:
 
 ## Testing and Verification
 
-Run the scripts that exist in `backend/package.json`, typically:
+Run the scripts that exist in `nakama-backend/package.json`, typically:
 
 - type checking
 - linting
