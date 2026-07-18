@@ -4,6 +4,7 @@ import AiringToday from "../components/airingToday/airingToday";
 import Top10 from "../components/top-ten/top-ten";
 import RandomRecommendations from "../components/recommendations/RandomRecommendations";
 import GetAllReviews from "../components/Reviews/feedAll";
+import NewsFeed from "../components/newsFeed/feed";
 
 const Home: React.FC = () => {
 	const [airingReady, setAiringReady] = useState(false);
@@ -36,6 +37,9 @@ const Home: React.FC = () => {
 				<>
 					<div>
 						<RandomRecommendations />
+					</div>
+					<div>
+						<NewsFeed />
 					</div>
 					<div>
 						<GetAllReviews />
