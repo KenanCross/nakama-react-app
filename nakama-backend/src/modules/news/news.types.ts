@@ -35,6 +35,7 @@ export interface NewsListResponse {
 export interface NewsImportResult {
 	fetched: number;
 	saved: number;
+	imageBackfilled: number;
 	duplicates: number;
 	rejected: number;
 	failedSources: Array<{
@@ -42,6 +43,13 @@ export interface NewsImportResult {
 		sourceName: string;
 		message: string;
 	}>;
+}
+
+export interface NewsImportJobResult extends NewsImportResult {
+	startedAt: string;
+	finishedAt: string;
+	durationMs: number;
+	status: "completed" | "failed";
 }
 
 export interface NewsCursor {

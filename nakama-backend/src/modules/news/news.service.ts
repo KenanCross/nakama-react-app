@@ -1,4 +1,5 @@
 import { ObjectId } from "mongodb";
+import { fetchArticleImageUrl } from "../../integrations/article-metadata/article-metadata.client";
 import { fetchLatestRssArticles } from "../../integrations/rss/rss-client";
 import { NewsArticleInput } from "../../models/newsArticleInput";
 import { createArticleFingerprint } from "../../utils/fingerprints";
@@ -17,18 +18,21 @@ import {
 
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 50;
+const IMAGE_ENRICHMENT_CONCURRENCY = 4;
 
 export const importLatestNewsArticles = async (): Promise<NewsImportResult> => {
 	const result = await fetchLatestRssArticles();
+	const articles = await enrichMissingArticleImages(result.articles);
 	const importResult: NewsImportResult = {
-		fetched: result.articles.length,
+		fetched: articles.length,
 		saved: 0,
+		imageBackfilled: 0,
 		duplicates: 0,
 		rejected: 0,
 		failedSources: result.failedSources,
 	};
 
-	for (const input of result.articles) {
+	for (const input of articles) {
 		const article = toStoredArticle(input);
 
 		if (!article) {
@@ -40,12 +44,50 @@ export const importLatestNewsArticles = async (): Promise<NewsImportResult> => {
 
 		if (status === "saved") {
 			importResult.saved += 1;
+		} else if (status === "imageBackfilled") {
+			importResult.imageBackfilled += 1;
 		} else {
 			importResult.duplicates += 1;
 		}
 	}
 
 	return importResult;
+};
+
+const enrichMissingArticleImages = async (
+	articles: NewsArticleInput[]
+): Promise<NewsArticleInput[]> => {
+	const enrichedArticles = [...articles];
+	let nextIndex = 0;
+
+	const enrichNext = async (): Promise<void> => {
+		const currentIndex = nextIndex;
+		nextIndex += 1;
+
+		if (currentIndex >= enrichedArticles.length) {
+			return;
+		}
+
+		const article = enrichedArticles[currentIndex];
+
+		if (!article.imageUrl) {
+			const imageUrl = await fetchArticleImageUrl(article.articleUrl);
+			if (imageUrl) {
+				enrichedArticles[currentIndex] = { ...article, imageUrl };
+			}
+		}
+
+		await enrichNext();
+	};
+
+	await Promise.all(
+		Array.from(
+			{ length: Math.min(IMAGE_ENRICHMENT_CONCURRENCY, enrichedArticles.length) },
+			() => enrichNext()
+		)
+	);
+
+	return enrichedArticles;
 };
 
 export const getNewsArticles = async ({

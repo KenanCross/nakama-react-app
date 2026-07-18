@@ -33,12 +33,20 @@ export const ensureNewsIndexes = async (): Promise<void> => {
 
 export const upsertNewsArticle = async (
 	article: Omit<StoredNewsArticle, "_id">
-): Promise<"saved" | "duplicate"> => {
+): Promise<"saved" | "imageBackfilled" | "duplicate"> => {
 	const existing = await collection().findOne({
 		$or: [{ canonicalUrl: article.canonicalUrl }, { fingerprint: article.fingerprint }],
 	});
 
 	if (existing) {
+		if (!existing.imageUrl && article.imageUrl) {
+			await collection().updateOne(
+				{ _id: existing._id },
+				{ $set: { imageUrl: article.imageUrl } }
+			);
+			return "imageBackfilled";
+		}
+
 		return "duplicate";
 	}
 

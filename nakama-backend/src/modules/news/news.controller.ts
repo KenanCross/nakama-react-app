@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
-import { getNewsArticles, importLatestNewsArticles } from "./news.service";
+import { importNewsJob } from "../../jobs/import-news.job";
+import { getNewsArticles } from "./news.service";
 
 export const ingestNewsArticles = async (_req: Request, res: Response) => {
 	try {
-		const result = await importLatestNewsArticles();
+		const result = await importNewsJob();
 		res.status(200).json(result);
 	} catch (error) {
 		res.status(500).json({ message: getErrorMessage(error) });
